@@ -25,7 +25,7 @@ pytest                         # unit tests
 
 `notebooks/01_eda.ipynb` — executed notebook (histograms, correlation
 heatmap, class balance, missing-value analysis, and subgroup risk analysis
-by sex / age band / chest-pain×angina). One-time setup for notebook execution: `python -m ipykernel install --user` (registers the venv's Jupyter kernel). Regenerate with:
+by sex / age band / chest-pain×angina). Regenerate with:
 
 ```bash
 jupytext --to notebook --execute notebooks/01_eda.py -o notebooks/01_eda.ipynb

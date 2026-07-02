@@ -18,7 +18,7 @@ def download_raw(out_path: Path = DEFAULT_RAW_PATH) -> pd.DataFrame:
     df = pd.concat([dataset.data.features, dataset.data.targets], axis=1)
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(out_path, index=False)
+    df.to_csv(out_path, index=False, lineterminator="\n")
     return df
 
 

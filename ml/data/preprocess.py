@@ -7,12 +7,13 @@ from pathlib import Path
 
 import pandas as pd
 
+from ml.data.download import DEFAULT_RAW_PATH
+
 # Integer-coded categorical clinical features vs true continuous measurements.
 CATEGORICAL_COLS = ["sex", "cp", "fbs", "restecg", "exang", "slope", "ca", "thal"]
 CONTINUOUS_COLS = ["age", "trestbps", "chol", "thalach", "oldpeak"]
 TARGET_COL = "target"
 
-DEFAULT_RAW_PATH = Path("data/raw/heart_cleveland_raw.csv")
 DEFAULT_CLEAN_PATH = Path("data/processed/heart_cleveland_clean.csv")
 
 
@@ -45,6 +46,6 @@ def preprocess(raw_df: pd.DataFrame) -> pd.DataFrame:
 if __name__ == "__main__":
     clean = preprocess(pd.read_csv(DEFAULT_RAW_PATH))
     DEFAULT_CLEAN_PATH.parent.mkdir(parents=True, exist_ok=True)
-    clean.to_csv(DEFAULT_CLEAN_PATH, index=False)
+    clean.to_csv(DEFAULT_CLEAN_PATH, index=False, lineterminator="\n")
     print(f"Wrote {DEFAULT_CLEAN_PATH} shape={clean.shape}")
     print(clean[TARGET_COL].value_counts().to_dict())

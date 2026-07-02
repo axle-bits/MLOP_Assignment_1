@@ -66,6 +66,13 @@ def test_drop_missing_removes_only_rows_with_nan_ca_or_thal():
     assert out.index.tolist() == [0]  # index reset after drop
 
 
+def test_drop_missing_retains_rows_with_nan_elsewhere():
+    df = make_raw([0, 1])
+    df.loc[0, "chol"] = np.nan
+    out = drop_missing(df)
+    assert len(out) == 2
+
+
 def test_cast_types_yields_integer_ca_and_thal():
     out = cast_types(make_raw([0]))
     assert pd.api.types.is_integer_dtype(out["ca"])

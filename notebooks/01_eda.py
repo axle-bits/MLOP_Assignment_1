@@ -1,3 +1,18 @@
+# ---
+# jupyter:
+#   jupytext:
+#     cell_metadata_filter: -all
+#     text_representation:
+#       extension: .py
+#       format_name: percent
+#       format_version: '1.3'
+#       jupytext_version: 1.19.4
+#   kernelspec:
+#     display_name: Python 3 (ipykernel)
+#     language: python
+#     name: python3
+# ---
+
 # %% [markdown]
 # # Heart Disease (Cleveland) — Exploratory Data Analysis
 #
@@ -13,7 +28,6 @@ import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import seaborn as sns
 from matplotlib.colors import LinearSegmentedColormap
