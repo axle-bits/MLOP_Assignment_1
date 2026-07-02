@@ -17,6 +17,7 @@ progresses. Feeds the "steps taken" sections of the final report.
 **Decision:** Drop rows with NaN in `ca` (4 rows) or `thal` (2 rows).
 **Rationale:** 2% of data; both features are categorical clinical measurements (vessel count, thalassemia type) where imputation would invent clinical facts; dropping sidesteps train/test leakage questions entirely.
 **Alternatives considered:** Mode imputation in-pipeline (keeps 303 rows but cleaned CSV would still hold NaNs); pre-split imputation (mild leakage a grader could flag).
+**Outcome:** post-drop class balance 160/137.
 
 ## 2026-07-02 — Repo layout: stage-oriented
 **Decision:** Top-level `ml/`, `api/`, `infra/`, `tests/`, `notebooks/`, `docs/`, `screenshots/`.
