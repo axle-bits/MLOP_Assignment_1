@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 import joblib
+import mlflow
 import numpy as np
 import pandas as pd
 import pytest
@@ -16,6 +17,15 @@ from ml.data.preprocess import (
     TARGET_COL,
 )
 from ml.models.export import export, pick_best
+
+
+@pytest.fixture(autouse=True)
+def restore_tracking_uri():
+    """export()/mlflow.set_tracking_uri mutate process-global state; keep
+    tests in this file order-independent by restoring it around each test."""
+    before = mlflow.get_tracking_uri()
+    yield
+    mlflow.set_tracking_uri(before)
 
 
 def runs_frame(rows):
@@ -119,6 +129,7 @@ def test_metadata_complete_and_consistent():
 def test_exported_matches_logged_model():
     import mlflow.sklearn
 
+    mlflow.set_tracking_uri("sqlite:///mlflow.db")
     meta = json.loads(METADATA.read_text(encoding="utf-8"))
     logged = mlflow.sklearn.load_model(f"runs:/{meta['run_id']}/model")
     exported = joblib.load(ARTIFACT)
