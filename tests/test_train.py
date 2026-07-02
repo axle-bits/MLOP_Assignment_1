@@ -5,7 +5,10 @@ Slow-ish (~30-60s: 6 quick GridSearchCV fits on 237 training rows) but
 network-free and CI-safe.
 """
 import mlflow
+import mlflow.sklearn
+import pandas as pd
 
+from ml.data.preprocess import DEFAULT_CLEAN_PATH, TARGET_COL
 from ml.models.train import EXPERIMENT_NAME, run_experiments
 
 REQUIRED_METRICS = [
@@ -39,3 +42,10 @@ def test_quick_train_creates_six_complete_runs(tmp_path):
         assert "confusion_matrix.png" in artifact_paths
         assert "feature_importance.png" in artifact_paths
         assert "model" in artifact_paths
+
+    # the acceptance contract: the logged model must load from the run and predict
+    mlflow.set_tracking_uri(uri)
+    some_run = runs[0]
+    pipe = mlflow.sklearn.load_model(f"runs:/{some_run.info.run_id}/model")
+    X = pd.read_csv(DEFAULT_CLEAN_PATH).drop(columns=[TARGET_COL]).head(3)
+    assert pipe.predict(X).shape == (3,)

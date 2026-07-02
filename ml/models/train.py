@@ -8,11 +8,6 @@ import argparse
 import os
 import tempfile
 
-# mlflow >=3.x puts the local filesystem tracking backend ("./mlruns" or any
-# file:// URI) in maintenance mode unless explicitly opted into; both the CLI
-# default store and the test suite's tmp_path file:// store need it enabled.
-os.environ.setdefault("MLFLOW_ALLOW_FILE_STORE", "true")
-
 import matplotlib
 
 matplotlib.use("Agg")  # headless: this module renders plot files only
@@ -21,6 +16,7 @@ import mlflow
 import mlflow.sklearn
 import numpy as np
 import pandas as pd
+from mlflow.models import infer_signature
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
@@ -142,16 +138,27 @@ def log_model_as_run_artifact(pipe, X_train):
     """
     with tempfile.TemporaryDirectory() as local_dir:
         local_model_path = os.path.join(local_dir, "model")
+        # Cast to float64 so mlflow's schema inference doesn't emit a
+        # UserWarning about integer columns being unable to represent NaNs
+        # (verified: without this cast, 6 UserWarnings appear across the run).
+        X_example = X_train.head(3).astype("float64")
+        signature = infer_signature(X_example, pipe.predict(X_example))
         mlflow.sklearn.save_model(
             pipe,
             path=local_model_path,
-            input_example=X_train.head(3),
+            input_example=X_example,
+            signature=signature,
             serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE,
         )
         mlflow.log_artifacts(local_model_path, artifact_path="model")
 
 
 def run_experiments(quick: bool = False, tracking_uri: str | None = None) -> pd.DataFrame:
+    # Without this, mlflow 3.14.0 raises on any file:// tracking URI (confirmed
+    # empirically): MlflowException("The filesystem tracking backend (e.g.,
+    # './mlruns') is in maintenance mode ... set `MLFLOW_ALLOW_FILE_STORE=true`
+    # to opt out of this exception."). Scoped here (use-site), not at import time.
+    os.environ.setdefault("MLFLOW_ALLOW_FILE_STORE", "true")
     if tracking_uri:
         mlflow.set_tracking_uri(tracking_uri)
     mlflow.set_experiment(EXPERIMENT_NAME)
