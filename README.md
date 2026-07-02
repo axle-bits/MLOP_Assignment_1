@@ -33,6 +33,26 @@ jupytext --to notebook --execute notebooks/01_eda.py -o notebooks/01_eda.ipynb
 
 Figures are written to `docs/figures/eda/`.
 
+## Model training & experiment tracking
+
+Train all 6 tracked combinations (LR / RF / XGBoost × raw / clinical features):
+
+```bash
+python -m ml.models.train           # full grids (~minutes)
+python -m ml.models.train --quick   # single-candidate grids (CI smoke)
+```
+
+Every run logs params, cross-validation + held-out test metrics, ROC curve,
+confusion matrix, feature importances, and the fitted pipeline to the local
+MLflow store (run metadata in `mlflow.db`, artifacts under `./mlruns` — both gitignored). Inspect with:
+
+```bash
+mlflow ui --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns
+```
+
+`notebooks/02_model_comparison.ipynb` reads the store and answers the
+project's research question (do the derived clinical features help?).
+
 ## Repository structure
 
 ```
