@@ -48,3 +48,8 @@ progresses. Feeds the "steps taken" sections of the final report.
 **Decision:** Added scikit-learn, xgboost, mlflow, joblib to requirements.txt, re-frozen with == pins after verifying the full test suite still passes. Installing mlflow forced pandas to be downgraded 3.0.3 → 2.3.3, because mlflow 3.14.0 declares `Requires-Dist: pandas<3` (confirmed via `pip show mlflow` and a `pip install --dry-run pandas==3.0.3 mlflow==3.14.0` check, which raised `ResolutionImpossible: mlflow 3.14.0 depends on pandas<3`); the full test suite was re-verified against the downgraded pin.
 **Rationale:** Reproducibility requirement — the pinned set is verified mutually compatible, not assumed.
 **Alternatives considered:** Unpinned ranges (irreproducible); conda env (project standardized on venv+pip); keeping pandas 3.0.3 — REJECTED, mlflow's own resolver makes this combination impossible.
+
+## 2026-07-02 — Feature encoding scheme
+**Decision:** StandardScaler on the 5 continuous features + `ca` (+ the 3 derived clinical features when enabled); OneHotEncoder(handle_unknown="ignore") on `cp`, `restecg`, `slope`, `thal`; passthrough for the 0/1 features `sex`, `fbs`, `exang`. `ca` is treated numerically because it is an ordinal count of major vessels (0–3), not a nominal code.
+**Rationale:** One-hot only where categories are genuinely nominal keeps dimensionality low on 297 rows; handle_unknown="ignore" protects serving-time inputs.
+**Alternatives considered:** One-hot everything (wasteful for ordinal/binary); ordinal-encode `thal`/`cp` (imposes a fake ordering on nominal clinical codes).
