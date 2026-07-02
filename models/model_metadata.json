@@ -1,0 +1,42 @@
+{
+  "run_id": "514db551010841ea9e4fe9fa2d0cfaf6",
+  "model_name": "logistic_regression",
+  "feature_set": "clinical",
+  "metrics": {
+    "cv_roc_auc_mean": 0.9195477855477854,
+    "cv_roc_auc_std": 0.012324277163715822,
+    "test_accuracy": 0.7666666666666667,
+    "test_precision": 0.75,
+    "test_recall": 0.75,
+    "test_f1": 0.75,
+    "test_roc_auc": 0.8816964285714286
+  },
+  "seed": 785,
+  "exported_at_utc": "2026-07-02T17:53:15.200185+00:00",
+  "package_versions": {
+    "scikit-learn": "1.9.0",
+    "pandas": "2.3.3",
+    "numpy": "2.5.0",
+    "joblib": "1.5.3",
+    "xgboost": "3.3.0",
+    "mlflow": "3.14.0"
+  },
+  "input_schema": {
+    "columns": [
+      "age",
+      "trestbps",
+      "chol",
+      "thalach",
+      "oldpeak",
+      "sex",
+      "cp",
+      "fbs",
+      "restecg",
+      "exang",
+      "slope",
+      "ca",
+      "thal"
+    ],
+    "note": "Raw 13-column patient frame; the pipeline performs all derived-feature computation, scaling and encoding internally. Columns are selected by name, order is not significant."
+  }
+}
