@@ -1,7 +1,7 @@
 """Train 3 classifiers x 2 feature sets with GridSearchCV; track in MLflow.
 
 Usage:
-    python -m ml.models.train              # full grids, ./mlruns store
+    python -m ml.models.train              # full grids, mlflow's local default store (sqlite:///mlflow.db; artifacts in ./mlruns)
     python -m ml.models.train --quick      # single-candidate grids (CI smoke)
 """
 import argparse
@@ -210,7 +210,11 @@ def run_experiments(quick: bool = False, tracking_uri: str | None = None) -> pd.
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--quick", action="store_true", help="single-candidate grids (CI smoke)")
-    parser.add_argument("--tracking-uri", default=None, help="MLflow tracking URI (default ./mlruns)")
+    parser.add_argument(
+        "--tracking-uri",
+        default=None,
+        help="MLflow tracking URI (default: mlflow's local default — sqlite:///mlflow.db metadata, ./mlruns artifacts)",
+    )
     args = parser.parse_args()
 
     results = run_experiments(quick=args.quick, tracking_uri=args.tracking_uri)

@@ -44,7 +44,7 @@ python -m ml.models.train --quick   # single-candidate grids (CI smoke)
 
 Every run logs params, cross-validation + held-out test metrics, ROC curve,
 confusion matrix, feature importances, and the fitted pipeline to the local
-MLflow store (run metadata in `mlflow.db`, artifacts under `./mlruns` — both gitignored). Inspect with:
+MLflow store (run metadata in `mlflow.db`, artifacts under `./mlruns` — both gitignored). Run all commands from the repo root — `mlflow.db` and `./mlruns` are created relative to the working directory. Inspect with:
 
 ```bash
 mlflow ui --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns

@@ -30,7 +30,7 @@ progresses. Feeds the "steps taken" sections of the final report.
 **Alternatives considered:** Pulse pressure — REJECTED: dataset has only systolic BP (`trestbps`), no diastolic column.
 
 ## 2026-07-02 — Stack decisions
-**Decision:** venv+pip with pinned `requirements.txt`; MLflow local file store (`./mlruns`); FastAPI; Docker; GitHub Actions; AWS EKS (ephemeral: create → verify/screenshot → destroy) with ECR as registry; SageMaker notebook available as AWS-side CLI/execution environment.
+**Decision:** venv+pip with pinned `requirements.txt`; MLflow local file store (`./mlruns`); FastAPI; Docker; GitHub Actions; AWS EKS (ephemeral: create → verify/screenshot → destroy) with ECR as registry; SageMaker notebook available as AWS-side CLI/execution environment. [Superseded 2026-07-02: mlflow 3.14 deprecates the pure file store; actual setup is sqlite:///mlflow.db metadata + ./mlruns artifacts — see the "mlflow 3.14.0 API adaptations" and tracking-URI entries below.]
 **Rationale:** Each is the assignment's recommended tool or the lightest option satisfying the rubric; EKS-ephemeral bounds cost.
 **Alternatives considered:** Minikube/Docker Desktop (no cloud evidence for report); conda; Flask; Jenkins; k3s-on-EC2.
 

@@ -23,7 +23,6 @@
 # 13 raw features?
 
 # %%
-import os
 import sys
 from pathlib import Path
 
@@ -39,10 +38,6 @@ sys.path.insert(0, str(ROOT))
 from ml.features.clinical import CLINICAL_FEATURES
 from ml.models.train import EXPERIMENT_NAME
 
-# mlflow 3.x raises on any file-store ('./mlruns') tracking URI unless this
-# opt-out is set (same forced deviation as ml/models/train.py — see
-# docs/DECISIONS.md, "mlflow 3.14.0 API adaptations in the training script").
-os.environ.setdefault("MLFLOW_ALLOW_FILE_STORE", "true")
 # The Task 5 training run that populated this repo's experiment was tracked
 # against the local sqlite backend (./mlflow.db), with artifacts materialized
 # under ./mlruns/<experiment_id>/<run_id>/artifacts/ — there is no file-store
@@ -65,6 +60,10 @@ METRICS = ["cv_roc_auc_mean", "test_accuracy", "test_precision", "test_recall", 
 # %%
 runs = mlflow.search_runs(experiment_names=[EXPERIMENT_NAME])
 full = runs[runs["params.quick_mode"] == "False"].copy()
+assert len(full) == 6, (
+    f"expected exactly one full-grid run per combo, found {len(full)} — "
+    "rerun `python -m ml.models.train` into a fresh store"
+)
 table = full[
     ["tags.model_name", "tags.feature_set"] + [f"metrics.{m}" for m in METRICS]
 ].rename(columns=lambda c: c.split(".", 1)[-1])
