@@ -45,6 +45,6 @@ progresses. Feeds the "steps taken" sections of the final report.
 **Alternatives considered:** LR+RF only (meets the ≥2 requirement but a thinner comparison); SVM (no native feature importances, weaker fit for the interpretability angle).
 
 ## 2026-07-02 — Phase 2 dependencies pinned
-**Decision:** Added scikit-learn, xgboost, mlflow, joblib to requirements.txt, re-frozen with == pins after verifying the full test suite still passes alongside the existing pandas pin.
+**Decision:** Added scikit-learn, xgboost, mlflow, joblib to requirements.txt, re-frozen with == pins after verifying the full test suite still passes. Installing mlflow forced pandas to be downgraded 3.0.3 → 2.3.3, because mlflow 3.14.0 declares `Requires-Dist: pandas<3` (confirmed via `pip show mlflow` and a `pip install --dry-run pandas==3.0.3 mlflow==3.14.0` check, which raised `ResolutionImpossible: mlflow 3.14.0 depends on pandas<3`); the full test suite was re-verified against the downgraded pin.
 **Rationale:** Reproducibility requirement — the pinned set is verified mutually compatible, not assumed.
-**Alternatives considered:** Unpinned ranges (irreproducible); conda env (project standardized on venv+pip).
+**Alternatives considered:** Unpinned ranges (irreproducible); conda env (project standardized on venv+pip); keeping pandas 3.0.3 — REJECTED, mlflow's own resolver makes this combination impossible.
