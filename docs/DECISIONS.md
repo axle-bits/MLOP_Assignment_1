@@ -38,3 +38,13 @@ progresses. Feeds the "steps taken" sections of the final report.
 **Decision:** Fixed two-class palette — no-disease `#2a78d6` (blue), disease `#e34948` (red); diverging blue↔gray↔red for correlation; single-hue blue ramp for prevalence heatmaps. Validated colorblind-safe (worst-pair ΔE 74.6, contrast ≥3:1).
 **Rationale:** Consistent, accessible figures across notebook and report; distinct from default-styled tutorial plots.
 **Alternatives considered:** seaborn defaults — not validated, visually generic.
+
+## 2026-07-02 — Third model: XGBoost added
+**Decision:** Train XGBoost (XGBClassifier, sklearn API) alongside Logistic Regression and Random Forest — 3 models × 2 feature sets = 6 tracked runs.
+**Rationale:** Strengthens the model-comparison section; FAQ explicitly lists XGBoost as an accepted choice.
+**Alternatives considered:** LR+RF only (meets the ≥2 requirement but a thinner comparison); SVM (no native feature importances, weaker fit for the interpretability angle).
+
+## 2026-07-02 — Phase 2 dependencies pinned
+**Decision:** Added scikit-learn, xgboost, mlflow, joblib to requirements.txt, re-frozen with == pins after verifying the full test suite still passes alongside the existing pandas pin.
+**Rationale:** Reproducibility requirement — the pinned set is verified mutually compatible, not assumed.
+**Alternatives considered:** Unpinned ranges (irreproducible); conda env (project standardized on venv+pip).
