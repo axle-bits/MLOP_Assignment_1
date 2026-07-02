@@ -53,6 +53,23 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlru
 `notebooks/02_model_comparison.ipynb` reads the store and answers the
 project's research question (do the derived clinical features help?).
 
+## Model packaging
+
+Export the best run (highest held-out ROC-AUC) to versioned artifacts:
+
+```bash
+python -m ml.models.export
+```
+
+This writes — and the repo commits — `models/heart_disease_pipeline.joblib`
+(the full preprocessing+model pipeline; loads with scikit-learn + joblib
+alone), `models/model_metadata.json` (source run, metrics, package versions,
+input schema), and `models/mlflow_model/` (the same model in MLflow format).
+
+Serving contract: send the 13 raw feature columns (see the metadata file);
+the pipeline handles derived features, scaling, and encoding internally and
+returns a class plus probability.
+
 ## Repository structure
 
 ```
