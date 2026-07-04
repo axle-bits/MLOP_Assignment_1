@@ -3,7 +3,7 @@
 .github/
 
 .pytest_cache/
-__pycache__/
+**/__pycache__
 mlruns/
 mlflow.db
 notebooks/
@@ -11,3 +11,4 @@ docs/
 screenshots/
 data/
 tests/
+models/mlflow_model/

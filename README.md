@@ -125,5 +125,5 @@ notebooks/   EDA (jupytext-paired .py source + executed .ipynb)
 tests/       pytest unit tests
 docs/        decision log, specs, report figures
 data/        raw + processed CSVs (committed; tiny dataset)
-api/ infra/  serving + deployment (later phases)
+api/ infra/  FastAPI serving code + Dockerfile; Kubernetes deployment in later phases
 ```

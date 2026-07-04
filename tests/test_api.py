@@ -9,7 +9,8 @@ from api.main import app
 
 client = TestClient(app)
 
-SAMPLE = json.loads(Path("api/sample_request.json").read_text(encoding="utf-8"))
+_SAMPLE_PATH = Path(__file__).resolve().parents[1] / "api" / "sample_request.json"
+SAMPLE = json.loads(_SAMPLE_PATH.read_text(encoding="utf-8"))
 
 
 def test_predict_valid_record_returns_prediction():
