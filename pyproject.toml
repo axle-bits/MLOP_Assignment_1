@@ -1,0 +1,15 @@
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+# Jupytext py:percent notebook sources use cell idioms (top-level
+# expressions, late imports) that a linter would fight.
+extend-exclude = ["notebooks"]
+
+[tool.ruff.lint]
+# Pragmatic gate: pycodestyle errors, pyflakes, import sorting.
+select = ["E", "F", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+# matplotlib.use("Agg") must run before pyplot imports (headless backend),
+# forcing imports after a statement.
+"ml/models/train.py" = ["E402"]

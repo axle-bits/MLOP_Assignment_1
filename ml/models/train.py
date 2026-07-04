@@ -1,7 +1,8 @@
 """Train 3 classifiers x 2 feature sets with GridSearchCV; track in MLflow.
 
 Usage:
-    python -m ml.models.train              # full grids, mlflow's local default store (sqlite:///mlflow.db; artifacts in ./mlruns)
+    python -m ml.models.train              # full grids (mlflow store: sqlite:///mlflow.db,
+                                            # artifacts in ./mlruns)
     python -m ml.models.train --quick      # single-candidate grids (CI smoke)
 """
 import argparse
@@ -213,7 +214,8 @@ def main():
     parser.add_argument(
         "--tracking-uri",
         default=None,
-        help="MLflow tracking URI (default: mlflow's local default — sqlite:///mlflow.db metadata, ./mlruns artifacts)",
+        help="MLflow tracking URI (default: sqlite:///mlflow.db for metadata, "
+             "./mlruns for artifacts)",
     )
     args = parser.parse_args()
 

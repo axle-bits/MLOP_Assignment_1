@@ -73,3 +73,8 @@ progresses. Feeds the "steps taken" sections of the final report.
 **Decision:** The best run (argmax test_roc_auc over full-grid runs; seed 785 makes this reproducible) is exported by `python -m ml.models.export` to `models/`: `heart_disease_pipeline.joblib` (canonical serving artifact, loadable with sklearn+joblib only), `model_metadata.json` (run id, metrics, package versions, input schema), and `mlflow_model/` (the same model in MLflow format). All three are committed to git.
 **Rationale:** Committing the few-KB artifacts lets the API, Docker build, and any grader work from a clean clone with no MLflow store and no retraining; the joblib path keeps mlflow out of the serving image; the MLflow-format copy covers that deliverable format explicitly. Pickle version-fragility is mitigated by pinned requirements plus versions recorded in the metadata.
 **Alternatives considered:** ONNX — rejected, the pandas FunctionTransformer step does not convert; MLflow Model Registry promotion — unnecessary for a single-model local store; not committing binaries — would force every fresh clone through a full training run before serving works.
+
+## 2026-07-04 — Lint gate: ruff (E, F, I)
+**Decision:** ruff as the single lint tool, configured in pyproject.toml: pycodestyle errors (E), pyflakes (F), import sorting (I), line length 100, notebooks/ excluded (jupytext cell idioms), E402 ignored only in ml/models/train.py (headless matplotlib backend must be set before pyplot import).
+**Rationale:** One fast tool covers what flake8+isort would need plugins for; a pragmatic error-level gate rather than a style crusade keeps CI signal high.
+**Alternatives considered:** flake8 (needs plugins, slower); pylint (noisy on ML code, heavy rule-disabling to get a clean pass).
