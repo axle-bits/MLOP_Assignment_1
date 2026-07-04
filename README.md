@@ -92,6 +92,31 @@ ruff check .
 pytest
 ```
 
+## Serving the model
+
+Run the API locally:
+
+```bash
+uvicorn api.main:app --reload --port 8000
+```
+
+Or containerized:
+
+```bash
+docker build -t heart-disease-api -f infra/Dockerfile .
+docker run -d -p 8000:8000 heart-disease-api
+```
+
+Endpoints: `POST /predict` (13 raw features in, prediction + probability
+out — see `api/sample_request.json`), `GET /health`, `GET /model-info`,
+interactive docs at `/docs`.
+
+```bash
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d @api/sample_request.json
+```
+
 ## Repository structure
 
 ```
