@@ -78,3 +78,8 @@ progresses. Feeds the "steps taken" sections of the final report.
 **Decision:** ruff as the single lint tool, configured in pyproject.toml: pycodestyle errors (E), pyflakes (F), import sorting (I), line length 100, notebooks/ excluded (jupytext cell idioms), E402 ignored only in ml/models/train.py (headless matplotlib backend must be set before pyplot import).
 **Rationale:** One fast tool covers what flake8+isort would need plugins for; a pragmatic error-level gate rather than a style crusade keeps CI signal high.
 **Alternatives considered:** flake8 (needs plugins, slower); pylint (noisy on ML code, heavy rule-disabling to get a clean pass).
+
+## 2026-07-04 — CI pipeline structure
+**Decision:** Three GitHub Actions jobs — lint (ruff) and test (pytest, junit artifact uploaded even on failure) in parallel, then train-smoke (quick grids, all 6 combinations, log + tracking store uploaded as artifacts). Python pinned to 3.13 (the committed model pickle was built under 3.13.11; unpickling across minor versions is the main realistic breakage). The smoke job does not run export: pick_best rejects quick-mode runs by design, and a CI-only bypass would weaken that guarantee — export logic is covered by unit tests in the test job. Docker build validation is added to this workflow in Phase 5.
+**Rationale:** Parallel lint/test gives fast failure signal; artifacts on every run (if: always()) satisfy the assignment's "artifacts/logging for each workflow run" even when the run fails — exactly when logs matter.
+**Alternatives considered:** Jenkins (assignment-permitted but needs self-hosting); single mega-job (slower feedback, muddier failure attribution); running full grids in CI (minutes of extra compute for no additional path coverage).

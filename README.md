@@ -1,5 +1,7 @@
 # Heart Disease Risk Prediction — MLOps Pipeline
 
+[![CI](https://github.com/axle-bits/MLOP_Assignment_1/actions/workflows/ci.yml/badge.svg)](https://github.com/axle-bits/MLOP_Assignment_1/actions/workflows/ci.yml)
+
 End-to-end MLOps assignment (BITS Pilani AIMLCZG523): a heart-disease risk
 classifier on the UCI Cleveland dataset, with experiment tracking, CI/CD,
 a containerized FastAPI service, Kubernetes deployment on AWS EKS, and
@@ -69,6 +71,26 @@ input schema), and `models/mlflow_model/` (the same model in MLflow format).
 Serving contract: send the 13 raw feature columns (see the metadata file);
 the pipeline handles derived features, scaling, and encoding internally and
 returns a class plus probability.
+
+## CI/CD
+
+Every push and pull request runs the GitHub Actions pipeline
+(`.github/workflows/ci.yml`):
+
+1. **Lint** — `ruff check .` (pycodestyle errors, pyflakes, import order)
+2. **Test** — full pytest suite on Python 3.13; JUnit results uploaded as a
+   workflow artifact on every run, including failures
+3. **Train smoke** — `python -m ml.models.train --quick` trains all six
+   model combinations end-to-end; the training log and MLflow store are
+   uploaded as workflow artifacts
+
+The pipeline fails on any lint finding, test failure, or training error.
+Run the same checks locally:
+
+```bash
+ruff check .
+pytest
+```
 
 ## Repository structure
 
