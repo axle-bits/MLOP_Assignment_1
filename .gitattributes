@@ -1,2 +1,4 @@
 *.csv text eol=lf
 * text=auto
+*.joblib binary
+*.pkl binary

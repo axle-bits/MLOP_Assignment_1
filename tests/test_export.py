@@ -19,15 +19,6 @@ from ml.data.preprocess import (
 from ml.models.export import export, pick_best
 
 
-@pytest.fixture(autouse=True)
-def restore_tracking_uri():
-    """export()/mlflow.set_tracking_uri mutate process-global state; keep
-    tests in this file order-independent by restoring it around each test."""
-    before = mlflow.get_tracking_uri()
-    yield
-    mlflow.set_tracking_uri(before)
-
-
 def runs_frame(rows):
     return pd.DataFrame(rows)
 
@@ -135,3 +126,13 @@ def test_exported_matches_logged_model():
     exported = joblib.load(ARTIFACT)
     X = load_features()
     assert (logged.predict(X) == exported.predict(X)).all()
+
+
+def test_export_restores_global_tracking_uri(tmp_path):
+    before = mlflow.get_tracking_uri()
+    uri = f"sqlite:///{(tmp_path / 'empty.db').as_posix()}"
+    with pytest.raises(RuntimeError):
+        export(tracking_uri=uri, out_dir=tmp_path / "models")
+    # export() itself must restore the URI (not just the test fixture,
+    # which only runs at teardown — this assertion happens before that).
+    assert mlflow.get_tracking_uri() == before
