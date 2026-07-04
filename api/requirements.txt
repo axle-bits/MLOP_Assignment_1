@@ -1,0 +1,10 @@
+# Slim serving dependencies — versions must match the repo-root
+# requirements.txt (source of truth). The committed model is a scikit-learn
+# LogisticRegression pipeline; if a future retrain crowns XGBoost, add the
+# xgboost pin here.
+fastapi==0.139.0
+uvicorn==0.49.0
+scikit-learn==1.9.0
+pandas==2.3.3
+numpy==2.5.0
+joblib==1.5.3

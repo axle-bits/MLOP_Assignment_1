@@ -88,3 +88,8 @@ progresses. Feeds the "steps taken" sections of the final report.
 **Decision:** The /predict schema enforces the UCI data dictionary — strict enums for categorical codes (cp 1–4, thal {3,6,7}, ca 0–3, binaries 0/1) and bounded clinical ranges for continuous features (age 18–100, trestbps 80–220, chol 100–600, thalach 60–220, oldpeak 0–7). Invalid input gets a structured 422.
 **Rationale:** The pipeline's OneHotEncoder(handle_unknown="ignore") would silently zero-out unknown codes and still emit a prediction; for a clinical predictor an explicit rejection beats silent garbage-in. The pipeline-level tolerance remains as defense-in-depth.
 **Alternatives considered:** Permissive passthrough relying on pipeline tolerance (silent, unauditable); rejecting at the pipeline level (breaks the exported artifact's generality for batch scoring).
+
+## 2026-07-04 — Serving image: slim, joblib-only
+**Decision:** The Docker image installs only api/requirements.txt (fastapi, uvicorn, scikit-learn, pandas, numpy, joblib — pins mirrored from the root requirements.txt) and copies ml/, models/, api/. No mlflow, xgboost, or plotting stack in the image. Non-root user, python:3.13-slim base (matches the pickle's build version), HEALTHCHECK on /health.
+**Rationale:** The exported joblib pipeline needs only sklearn+pandas+the ml package at inference; excluding the training stack roughly halves the image and shrinks the attack surface. Phase 3 chose the joblib artifact precisely to enable this.
+**Alternatives considered:** Installing the full requirements.txt (simpler but ~2× image, drags in mlflow); mlflow model serving (`mlflow models serve`) — heavier and its float64 signature enforcement could reject integer JSON.
