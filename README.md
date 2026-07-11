@@ -117,6 +117,31 @@ curl -X POST http://localhost:8000/predict \
   -d @api/sample_request.json
 ```
 
+## Deploying to Kubernetes
+
+The API deploys to any Kubernetes cluster from the manifests in `infra/k8s/`
+(tested on Docker Desktop's built-in cluster):
+
+```bash
+docker build -t heart-disease-api:v1 -f infra/Dockerfile .
+kubectl apply -f infra/k8s/
+kubectl rollout status deployment/heart-disease-api -n heart-disease
+```
+
+This creates the `heart-disease` namespace, a 2-replica Deployment with
+readiness/liveness probes on `/health`, and a LoadBalancer Service mapping
+port 80 to the pods' 8000. On Docker Desktop the service binds to
+localhost:
+
+```bash
+curl http://localhost/health
+curl -X POST http://localhost/predict \
+  -H "Content-Type: application/json" \
+  -d @api/sample_request.json
+```
+
+Tear down with `kubectl delete -f infra/k8s/`.
+
 ## Repository structure
 
 ```
