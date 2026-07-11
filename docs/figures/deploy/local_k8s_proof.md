@@ -2,6 +2,20 @@
 
 Cluster: Docker Desktop Kubernetes, 2 nodes (`desktop-control-plane`, `desktop-worker`), context `docker-desktop`.
 
+## Manifest validation (dry run)
+
+```bash
+kubectl apply --dry-run=client -f infra/k8s/
+```
+
+```
+namespace/heart-disease unchanged (dry run)
+deployment.apps/heart-disease-api unchanged (dry run)
+service/heart-disease-api unchanged (dry run)
+```
+
+All manifests are valid and would apply cleanly to the cluster.
+
 ## Step 1: Build and tag the image
 
 ```bash

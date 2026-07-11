@@ -130,7 +130,7 @@ kubectl rollout status deployment/heart-disease-api -n heart-disease
 
 This creates the `heart-disease` namespace, a 2-replica Deployment with
 readiness/liveness probes on `/health`, and a LoadBalancer Service mapping
-port 80 to the pods' 8000. On Docker Desktop the service binds to
+port 80 to the pods' 8000. On Docker Desktop the service is reachable at
 localhost:
 
 ```bash
@@ -150,5 +150,6 @@ notebooks/   EDA (jupytext-paired .py source + executed .ipynb)
 tests/       pytest unit tests
 docs/        decision log, specs, report figures
 data/        raw + processed CSVs (committed; tiny dataset)
-api/ infra/  FastAPI serving code + Dockerfile; Kubernetes deployment in later phases
+api/ infra/  FastAPI serving code, Dockerfile, Kubernetes manifests
+screenshots/  report evidence (mlflow, ci/cd, api, deploy)
 ```
