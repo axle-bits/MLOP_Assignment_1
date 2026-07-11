@@ -238,9 +238,11 @@ under 3.13.11, and cross-minor-version unpickling is the most realistic
 way a pipeline like this actually breaks.
 
 To demonstrate the gate is real rather than decorative, a deliberately
-broken commit was pushed to trigger a red run: lint/test/train-smoke fail
-fast and the pipeline reports failure, then the fix was pushed to restore
-a green run.
+broken commit was pushed to trigger a red run: the test job fails, causing
+the downstream train-smoke and docker jobs to be skipped (they depend on
+test), while lint still passes independently; the pipeline reports failure
+with the failing assertion visible in the logs. The fix was then pushed
+to restore a green run.
 
 ![Green CI run](../../screenshots/cicd/01-green-run-summary.png)
 ![Red CI run demonstrating the gate](../../screenshots/cicd/03-red-run-summary.png)
@@ -248,7 +250,8 @@ a green run.
 ## 7. Containerization
 
 The serving image installs only `api/requirements.txt` — FastAPI, uvicorn,
-scikit-learn, pandas, numpy, and joblib, eight pins mirrored from the root
+scikit-learn, pandas, numpy, joblib, prometheus-client, and
+prometheus-fastapi-instrumentator, eight pins mirrored from the root
 `requirements.txt` — and copies in `ml/`, `models/`, and `api/`; it
 deliberately excludes MLflow, XGBoost, and the plotting stack, since the
 exported joblib pipeline only needs scikit-learn, pandas, and the `ml`
