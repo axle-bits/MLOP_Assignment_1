@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: heart-disease-api:v1
+          image: heart-disease-api:v2
           # Prefer the locally built image; no registry is needed on Docker Desktop.
           imagePullPolicy: IfNotPresent
           ports:

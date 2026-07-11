@@ -142,6 +142,24 @@ curl -X POST http://localhost/predict \
 
 Tear down with `kubectl delete -f infra/k8s/`.
 
+## Monitoring
+
+With the app deployed, add Prometheus and Grafana (both provisioned
+declaratively — no manual setup):
+
+```bash
+kubectl apply -f infra/k8s/monitoring/
+```
+
+- Prometheus scrapes the API's `/metrics` every 15s: http://localhost:9090
+- Grafana (anonymous viewer) serves a pre-provisioned "Heart Disease API"
+  dashboard — request rate, p50/p95 latency, non-2xx rate, and predictions
+  by risk label: http://localhost:3000
+
+The API exposes standard HTTP metrics plus a domain counter,
+`heart_disease_predictions_total{risk_label=...}`, incremented on every
+prediction. Tear down with `kubectl delete -f infra/k8s/monitoring/`.
+
 ## Repository structure
 
 ```
