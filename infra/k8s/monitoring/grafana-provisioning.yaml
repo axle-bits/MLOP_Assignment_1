@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  namespace: heart-disease
+data:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        uid: prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus:9090
+        isDefault: true
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-provider
+  namespace: heart-disease
+data:
+  provider.yaml: |
+    apiVersion: 1
+    providers:
+      - name: default
+        orgId: 1
+        type: file
+        options:
+          path: /var/lib/grafana/dashboards
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: heart-disease
+data:
+  heart-disease-api.json: |
+    {
+      "uid": "heart-disease-api",
+      "title": "Heart Disease API",
+      "timezone": "browser",
+      "refresh": "10s",
+      "time": { "from": "now-15m", "to": "now" },
+      "panels": [
+        {
+          "id": 1, "type": "timeseries", "title": "Request rate (req/s)",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [ { "expr": "sum(rate(http_requests_total[1m]))", "legendFormat": "all handlers" } ]
+        },
+        {
+          "id": 2, "type": "timeseries", "title": "Latency p50 / p95 (s)",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [
+            { "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p50" },
+            { "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))", "legendFormat": "p95" }
+          ]
+        },
+        {
+          "id": 3, "type": "timeseries", "title": "Non-2xx responses (req/s)",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [ { "expr": "sum(rate(http_requests_total{status!~\"2xx\"}[5m]))", "legendFormat": "non-2xx" } ]
+        },
+        {
+          "id": 4, "type": "timeseries", "title": "Predictions by risk label",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "targets": [ { "expr": "sum by (risk_label) (heart_disease_predictions_total)", "legendFormat": "{{risk_label}}" } ]
+        }
+      ],
+      "schemaVersion": 39
+    }
