@@ -74,3 +74,30 @@ def test_model_info_exposes_provenance():
     body = client.get("/model-info").json()
     assert "run_id" in body
     assert "metrics" in body
+
+
+def test_metrics_endpoint_serves_prometheus_format():
+    resp = client.get("/metrics")
+    assert resp.status_code == 200
+    assert "# HELP" in resp.text
+    assert "http_request" in resp.text
+
+
+def test_predict_increments_prediction_counter():
+    before = client.get("/metrics").text
+    client.post("/predict", json=SAMPLE)
+    after = client.get("/metrics").text
+    assert 'heart_disease_predictions_total{risk_label="no disease"}' in after
+
+    def counter_value(text):
+        for line in text.splitlines():
+            if line.startswith('heart_disease_predictions_total{risk_label="no disease"}'):
+                return float(line.rsplit(" ", 1)[1])
+        return 0.0
+
+    assert counter_value(after) == counter_value(before) + 1.0
+
+
+def test_metrics_not_in_openapi_schema():
+    paths = client.get("/openapi.json").json()["paths"]
+    assert "/metrics" not in paths

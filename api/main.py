@@ -13,6 +13,8 @@ from pathlib import Path
 import joblib
 import pandas as pd
 from fastapi import FastAPI
+from prometheus_client import Counter
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from api.schemas import PatientFeatures, PredictionResponse
 
@@ -42,6 +44,14 @@ app = FastAPI(
 pipeline = joblib.load(MODEL_PATH)
 metadata = json.loads(METADATA_PATH.read_text(encoding="utf-8"))
 
+PREDICTIONS_BY_CLASS = Counter(
+    "heart_disease_predictions",
+    "Predictions served, by predicted risk label",
+    ["risk_label"],
+)
+
+Instrumentator().instrument(app).expose(app, include_in_schema=False)
+
 
 @app.post("/predict", response_model=PredictionResponse)
 def predict(features: PatientFeatures) -> PredictionResponse:
@@ -56,10 +66,12 @@ def predict(features: PatientFeatures) -> PredictionResponse:
         probability,
         latency_ms,
     )
+    risk_label = "disease" if prediction == 1 else "no disease"
+    PREDICTIONS_BY_CLASS.labels(risk_label=risk_label).inc()
     return PredictionResponse(
         prediction=prediction,
         probability=probability,
-        risk_label="disease" if prediction == 1 else "no disease",
+        risk_label=risk_label,
     )
 
 

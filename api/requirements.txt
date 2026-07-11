@@ -8,3 +8,5 @@ scikit-learn==1.9.0
 pandas==2.3.3
 numpy==2.5.0
 joblib==1.5.3
+prometheus_client==0.25.0
+prometheus-fastapi-instrumentator==8.0.2
