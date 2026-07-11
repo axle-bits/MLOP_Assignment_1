@@ -136,7 +136,7 @@ INFO:     10.244.1.1:33578 - "GET /health HTTP/1.1" 200 OK
 INFO:     10.244.1.1:1147 - "POST /predict HTTP/1.1" 200 OK
 ```
 
-(pod `heart-disease-api-5d7b66585b-8rwds`, last 5 lines shown)
+(pod `heart-disease-api-5d7b66585b-8rwds`, recent log excerpt)
 
 ```
 INFO:     10.244.1.1:53750 - "GET /health HTTP/1.1" 200 OK
@@ -150,7 +150,7 @@ INFO:     10.244.1.1:31202 - "POST /predict HTTP/1.1" 200 OK
 INFO:     10.244.1.1:39060 - "GET /health HTTP/1.1" 200 OK
 ```
 
-(pod `heart-disease-api-5d7b66585b-hgmj2`, last 5 significant lines shown)
+(pod `heart-disease-api-5d7b66585b-hgmj2`, recent log excerpt)
 
 Both pods show the structured application log line `heart_disease_api INFO predict prediction=... probability=... latency_ms=...` alongside uvicorn's access-log line for the same request.
 
