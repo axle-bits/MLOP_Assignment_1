@@ -25,6 +25,22 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 INDEX_HTML_PATH = Path(__file__).resolve().parent / "index.html"
 ARCHITECTURE_PNG_PATH = REPO_ROOT / "docs" / "figures" / "architecture" / "architecture.png"
 CSV_PATH = REPO_ROOT / "data" / "processed" / "heart_cleveland_clean.csv"
+METADATA_PATH = REPO_ROOT / "models" / "model_metadata.json"
+
+# Whitelisted figure routes: no directory serving, no path traversal surface.
+FIGURE_PATHS = {
+    "/figures/class_balance.png": REPO_ROOT / "docs" / "figures" / "eda" / "class_balance.png",
+    "/figures/correlation_heatmap.png": (
+        REPO_ROOT / "docs" / "figures" / "eda" / "correlation_heatmap.png"
+    ),
+    "/figures/cp_exang_prevalence.png": (
+        REPO_ROOT / "docs" / "figures" / "eda" / "cp_exang_prevalence.png"
+    ),
+    "/figures/roc_auc_by_model.png": (
+        REPO_ROOT / "docs" / "figures" / "models" / "roc_auc_by_model.png"
+    ),
+    "/figures/clinical_delta.png": REPO_ROOT / "docs" / "figures" / "models" / "clinical_delta.png",
+}
 
 # ml/data/preprocess.py: TARGET_COL = "target" (verified against the CSV
 # header). Hardcoded here rather than imported, per the demo's stdlib-only,
@@ -188,10 +204,14 @@ class DemoHandler(BaseHTTPRequestHandler):
             self._send_file(INDEX_HTML_PATH, "text/html; charset=utf-8")
         elif path == "/architecture.png":
             self._send_file(ARCHITECTURE_PNG_PATH, "image/png")
+        elif path in FIGURE_PATHS:
+            self._send_file(FIGURE_PATHS[path], "image/png")
         elif path == "/api/cluster":
             self._handle_cluster()
         elif path == "/api/traffic":
             self._send_json(200, traffic_generator.status())
+        elif path == "/api/metadata":
+            self._handle_metadata()
         else:
             self._send_json(404, {"error": "not found"})
 
@@ -224,6 +244,17 @@ class DemoHandler(BaseHTTPRequestHandler):
             self._send_json(502, {"error": f"upstream unreachable: {exc.reason}"})
             return
         self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _handle_metadata(self):
+        if not METADATA_PATH.is_file():
+            self._send_json(404, {"error": f"{METADATA_PATH.name} not found"})
+            return
+        body = METADATA_PATH.read_bytes()
+        self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()

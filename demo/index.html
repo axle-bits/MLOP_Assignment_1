@@ -186,6 +186,63 @@
   .running-indicator { font-size: 13px; margin-bottom: 10px; }
   .running-indicator.on { color: var(--green); font-weight: 600; }
   .running-indicator.off { color: var(--text-muted); }
+
+  /* Data & EDA / Model: fact cards */
+  .fact-cards { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+  .fact-card {
+    flex: 1 1 220px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .fact-card .fact-value { font-size: 19px; font-weight: 800; color: var(--navy-dark); line-height: 1.25; }
+  .fact-card .fact-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+  /* Figures */
+  .figure-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .figure-card img { max-width: 100%; border: 1px solid var(--border); border-radius: 8px; display: block; }
+  .figure-card .figure-caption { font-size: 12.5px; color: var(--text-muted); margin: 8px 2px 0; }
+
+  /* Model: winner callout */
+  .winner-card {
+    background: var(--panel);
+    border: 1px solid var(--accent);
+    border-left: 5px solid var(--accent);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+  }
+  .winner-card .winner-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--accent-dark);
+    margin-bottom: 6px;
+  }
+  .winner-card .winner-title { font-size: 17px; font-weight: 700; color: var(--navy-dark); margin-bottom: 4px; }
+  .winner-card .winner-detail { font-size: 13.5px; color: var(--text-muted); }
+
+  /* Model: comparison table */
+  table tr.winner-row { background: #fdf0ea; }
+  table tr.winner-row td { font-weight: 700; color: var(--navy-dark); }
+  .table-note { font-size: 13px; color: var(--text-muted); margin-top: 12px; font-style: italic; }
+
+  /* Model: live model card */
+  .model-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-top: 4px; }
+  .model-card-field .mcf-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.02em; }
+  .model-card-field .mcf-value { font-size: 14px; color: var(--text); margin-top: 3px; word-break: break-word; }
+  .schema-cols { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .schema-col-pill {
+    background: #eef2f7;
+    color: var(--navy-dark);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 12px;
+  }
 </style>
 
 <nav class="sidebar">
@@ -193,6 +250,14 @@
   <button class="nav-btn active" id="nav-overview" onclick="showView('overview')">
     <strong>Overview</strong>
     <span>for everyone</span>
+  </button>
+  <button class="nav-btn" id="nav-eda" onclick="showView('eda')">
+    <strong>Data &amp; EDA</strong>
+    <span>data scientist view</span>
+  </button>
+  <button class="nav-btn" id="nav-model" onclick="showView('model')">
+    <strong>Model</strong>
+    <span>ML engineer view</span>
   </button>
   <button class="nav-btn" id="nav-risk" onclick="showView('risk')">
     <strong>Risk Assessment</strong>
@@ -244,6 +309,155 @@
       <p class="repo-link">
         Source: <a href="https://github.com/axle-bits/MLOP_Assignment_1" target="_blank" rel="noopener">github.com/axle-bits/MLOP_Assignment_1</a>
       </p>
+    </div>
+  </section>
+
+  <!-- ===================== Data & EDA ===================== -->
+  <section class="view" id="view-eda">
+    <h2>Data &amp; EDA</h2>
+    <p class="subtitle">UCI Cleveland heart disease dataset: cleaning decisions, class balance, and the signals the models learn from.</p>
+
+    <div class="fact-cards">
+      <div class="fact-card">
+        <div class="fact-value">303 &rarr; 297 records</div>
+        <div class="fact-label">6 rows dropped for missing ca/thal &mdash; imputing categorical clinical codes would invent facts</div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-value">160 / 137 class split</div>
+        <div class="fact-label">No disease / disease</div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-value">oldpeak r=+0.42, thalach r=&minus;0.42</div>
+        <div class="fact-label">Strongest correlates with target</div>
+      </div>
+      <div class="fact-card">
+        <div class="fact-value">RPP &middot; HRR &middot; oldpeak&times;slope</div>
+        <div class="fact-label">Derived features: rate-pressure product, heart-rate reserve, oldpeak&times;slope</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Figures</h3>
+      <div class="figure-grid">
+        <div class="figure-card">
+          <img src="/figures/class_balance.png" alt="Class balance bar chart: no disease vs disease counts">
+          <p class="figure-caption">Class balance &mdash; 160 no-disease vs 137 disease, mild imbalance.</p>
+        </div>
+        <div class="figure-card">
+          <img src="/figures/correlation_heatmap.png" alt="Correlation heatmap of clinical features against target">
+          <p class="figure-caption">Correlation heatmap &mdash; oldpeak and thalach are the strongest linear correlates of target.</p>
+        </div>
+        <div class="figure-card">
+          <img src="/figures/cp_exang_prevalence.png" alt="Disease prevalence by chest pain type and exercise-induced angina">
+          <p class="figure-caption">Disease prevalence by chest pain type and exercise-induced angina.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Model ===================== -->
+  <section class="view" id="view-model">
+    <h2>Model</h2>
+    <p class="subtitle">Six model / feature-set combinations, grid-searched and tracked in MLflow &mdash; and the run packaged for serving.</p>
+
+    <div class="winner-card">
+      <div class="winner-tag">Winner</div>
+      <div class="winner-title">Logistic Regression + clinical features</div>
+      <div class="winner-detail">Test ROC-AUC 0.8817 (CV 0.9195 &plusmn; 0.0123), seed 785, GridSearchCV 5-fold</div>
+    </div>
+
+    <div class="panel">
+      <h3>Model &amp; feature-set comparison</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Feature set</th>
+            <th>CV ROC-AUC</th>
+            <th>Accuracy</th>
+            <th>Precision</th>
+            <th>Recall</th>
+            <th>F1</th>
+            <th>Test ROC-AUC</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="winner-row">
+            <td>Logistic Regression</td>
+            <td>Clinical</td>
+            <td>0.9195 &plusmn; 0.0123</td>
+            <td>0.7667</td>
+            <td>0.7500</td>
+            <td>0.7500</td>
+            <td>0.7500</td>
+            <td>0.8817</td>
+          </tr>
+          <tr>
+            <td>Logistic Regression</td>
+            <td>Raw</td>
+            <td>0.9198 &plusmn; 0.0230</td>
+            <td>0.7833</td>
+            <td>0.7778</td>
+            <td>0.7500</td>
+            <td>0.7636</td>
+            <td>0.8761</td>
+          </tr>
+          <tr>
+            <td>Random Forest</td>
+            <td>Raw</td>
+            <td>0.9238 &plusmn; 0.0149</td>
+            <td>0.7833</td>
+            <td>0.7586</td>
+            <td>0.7857</td>
+            <td>0.7719</td>
+            <td>0.8583</td>
+          </tr>
+          <tr>
+            <td>Random Forest</td>
+            <td>Clinical</td>
+            <td>0.9148 &plusmn; 0.0206</td>
+            <td>0.7667</td>
+            <td>0.7917</td>
+            <td>0.6786</td>
+            <td>0.7308</td>
+            <td>0.8493</td>
+          </tr>
+          <tr>
+            <td>XGBoost</td>
+            <td>Clinical</td>
+            <td>0.9313 &plusmn; 0.0115</td>
+            <td>0.6833</td>
+            <td>0.6552</td>
+            <td>0.6786</td>
+            <td>0.6667</td>
+            <td>0.8415</td>
+          </tr>
+          <tr>
+            <td>XGBoost</td>
+            <td>Raw</td>
+            <td>0.9242 &plusmn; 0.0196</td>
+            <td>0.7500</td>
+            <td>0.6970</td>
+            <td>0.8214</td>
+            <td>0.7541</td>
+            <td>0.8315</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="table-note">Clinical features helped Logistic Regression but slightly hurt Random Forest &mdash; tree ensembles already capture those interactions.</p>
+    </div>
+
+    <div class="panel">
+      <h3>Figure</h3>
+      <div class="figure-card">
+        <img src="/figures/roc_auc_by_model.png" alt="Test ROC-AUC by model and feature set, bar chart">
+        <p class="figure-caption">Test ROC-AUC across all six model / feature-set combinations.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Model card &mdash; from models/model_metadata.json, committed with the artifact</h3>
+      <div id="model-card-container"><p class="empty-state">Loading model card&hellip;</p></div>
     </div>
   </section>
 
@@ -424,6 +638,9 @@
     } else {
       stopOperationsPolling();
     }
+    if (view === "model") {
+      loadModelCard();
+    }
   }
 
   // ---------- Risk Assessment ----------
@@ -513,6 +730,83 @@
     const div = document.createElement("div");
     div.textContent = str;
     return div.innerHTML;
+  }
+
+  // ---------- Model: live model card ----------
+  async function loadModelCard() {
+    const container = document.getElementById("model-card-container");
+    container.innerHTML = '<p class="empty-state">Loading model card&hellip;</p>';
+    try {
+      const response = await fetch("/api/metadata");
+      const body = await response.json();
+      if (!response.ok) {
+        renderModelCardError(body.error || "metadata unavailable");
+        return;
+      }
+      renderModelCard(body);
+    } catch (err) {
+      renderModelCardError(err.message);
+    }
+  }
+
+  function renderModelCardError(message) {
+    document.getElementById("model-card-container").innerHTML =
+      '<div class="error-box">Could not load /api/metadata: ' + escapeHtml(message) + "</div>";
+  }
+
+  function renderModelCard(meta) {
+    const metrics = meta.metrics || {};
+    const versions = meta.package_versions || {};
+    const schema = meta.input_schema || {};
+    const columns = schema.columns || [];
+
+    const versionPills = Object.entries(versions)
+      .map(([pkg, ver]) => `<span class="schema-col-pill">${escapeHtml(pkg)} ${escapeHtml(ver)}</span>`)
+      .join("");
+    const columnPills = columns
+      .map((col) => `<span class="schema-col-pill">${escapeHtml(col)}</span>`)
+      .join("");
+
+    document.getElementById("model-card-container").innerHTML = `
+      <div class="model-card-grid">
+        <div class="model-card-field">
+          <div class="mcf-label">Run ID</div>
+          <div class="mcf-value">${escapeHtml(meta.run_id || "—")}</div>
+        </div>
+        <div class="model-card-field">
+          <div class="mcf-label">Model / feature set</div>
+          <div class="mcf-value">${escapeHtml(meta.model_name || "—")} / ${escapeHtml(meta.feature_set || "—")}</div>
+        </div>
+        <div class="model-card-field">
+          <div class="mcf-label">Exported at (UTC)</div>
+          <div class="mcf-value">${escapeHtml(meta.exported_at_utc || "—")}</div>
+        </div>
+        <div class="model-card-field">
+          <div class="mcf-label">Seed</div>
+          <div class="mcf-value">${escapeHtml(String(meta.seed ?? "—"))}</div>
+        </div>
+        <div class="model-card-field">
+          <div class="mcf-label">CV ROC-AUC</div>
+          <div class="mcf-value">${(metrics.cv_roc_auc_mean ?? 0).toFixed(4)} &plusmn; ${(metrics.cv_roc_auc_std ?? 0).toFixed(4)}</div>
+        </div>
+        <div class="model-card-field">
+          <div class="mcf-label">Test ROC-AUC</div>
+          <div class="mcf-value">${(metrics.test_roc_auc ?? 0).toFixed(4)}</div>
+        </div>
+        <div class="model-card-field">
+          <div class="mcf-label">Test accuracy / precision / recall / F1</div>
+          <div class="mcf-value">${(metrics.test_accuracy ?? 0).toFixed(4)} / ${(metrics.test_precision ?? 0).toFixed(4)} / ${(metrics.test_recall ?? 0).toFixed(4)} / ${(metrics.test_f1 ?? 0).toFixed(4)}</div>
+        </div>
+        <div class="model-card-field">
+          <div class="mcf-label">Input schema (${columns.length} columns)</div>
+          <div class="schema-cols">${columnPills}</div>
+        </div>
+        <div class="model-card-field">
+          <div class="mcf-label">Package versions</div>
+          <div class="schema-cols">${versionPills}</div>
+        </div>
+      </div>
+    `;
   }
 
   // ---------- Operations: cluster ----------
