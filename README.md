@@ -166,7 +166,7 @@ prediction. Tear down with `kubectl delete -f infra/k8s/monitoring/`.
 ml/          data download + preprocessing (importable, tested)
 notebooks/   EDA (jupytext-paired .py source + executed .ipynb)
 tests/       pytest unit tests
-docs/        decision log, specs, report figures
+docs/        decision log, report, figures
 data/        raw + processed CSVs (committed; tiny dataset)
 api/ infra/  FastAPI serving code, Dockerfile, Kubernetes manifests
 screenshots/  report evidence (mlflow, ci/cd, api, deploy)
