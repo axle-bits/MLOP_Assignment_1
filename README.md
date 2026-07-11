@@ -160,6 +160,23 @@ The API exposes standard HTTP metrics plus a domain counter,
 `heart_disease_predictions_total{risk_label=...}`, incremented on every
 prediction. Tear down with `kubectl delete -f infra/k8s/monitoring/`.
 
+## Demo dashboard
+
+A small self-contained dashboard ties the running stack together for
+demos: a clinician-style risk assessment form, a live cluster status
+board, and a traffic generator that replays real patient records from
+the dataset (with occasional invalid requests) so the Grafana panels
+show realistic variety.
+
+With the app deployed (see above):
+
+```bash
+python demo/server.py
+```
+
+Then open http://localhost:8888. The dashboard only calls the API's
+public endpoints and kubectl; it changes nothing in the cluster.
+
 ## Repository structure
 
 ```
@@ -169,5 +186,6 @@ tests/       pytest unit tests
 docs/        decision log, report, figures
 data/        raw + processed CSVs (committed; tiny dataset)
 api/ infra/  FastAPI serving code, Dockerfile, Kubernetes manifests
+demo/        presentation dashboard (server + single-page UI)
 screenshots/  report evidence (mlflow, ci/cd, api, deploy)
 ```

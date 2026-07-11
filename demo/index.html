@@ -1,0 +1,690 @@
+<title>Heart Disease Risk API — Demo Dashboard</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --navy: #3d5a80;
+    --navy-dark: #2c4360;
+    --accent: #ee6c4d;
+    --accent-dark: #d1573a;
+    --bg: #f4f7fa;
+    --panel: #ffffff;
+    --border: #dee5ee;
+    --text: #1f2a37;
+    --text-muted: #64748b;
+    --red: #c0392b;
+    --green: #1e8a4c;
+    --lane-data: #ece4da;
+    --lane-train: #dff3e3;
+    --lane-pack: #fbe6cf;
+    --lane-cicd: #dbeefb;
+    --lane-k8s: #e8ddf9;
+    --lane-client: #fbf0c9;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    display: flex;
+    min-height: 100vh;
+  }
+  a { color: var(--navy); }
+
+  /* Sidebar */
+  nav.sidebar {
+    width: 230px;
+    flex: 0 0 230px;
+    background: var(--navy);
+    color: #eef2f7;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  nav.sidebar h1 {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #cfe0f5;
+    margin: 0 8px 18px;
+  }
+  .nav-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    color: #dce6f2;
+    padding: 12px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+  .nav-btn strong { display: block; font-size: 14.5px; color: #ffffff; }
+  .nav-btn span { display: block; font-size: 12px; color: #b7c9de; margin-top: 2px; }
+  .nav-btn:hover { background: rgba(255, 255, 255, 0.08); }
+  .nav-btn.active { background: var(--accent); }
+  .nav-btn.active strong, .nav-btn.active span { color: #fff; }
+
+  /* Main content */
+  main { flex: 1; padding: 32px 40px; max-width: 1100px; }
+  .view { display: none; }
+  .view.active { display: block; }
+  h2 { margin: 0 0 4px; font-size: 24px; color: var(--navy-dark); }
+  .subtitle { color: var(--text-muted); margin: 0 0 24px; font-size: 14px; }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 20px;
+  }
+  .panel h3 { margin: 0 0 14px; font-size: 15px; color: var(--navy-dark); }
+
+  /* Overview */
+  .arch-img { max-width: 100%; border: 1px solid var(--border); border-radius: 8px; display: block; margin-bottom: 20px; }
+  .stage-list { display: flex; flex-direction: column; gap: 10px; }
+  .stage {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .stage .stage-name { font-weight: 600; min-width: 130px; flex: 0 0 130px; color: var(--navy-dark); font-size: 13.5px; }
+  .stage .stage-caption { font-size: 13.5px; color: var(--text); }
+  .stage.data { background: var(--lane-data); }
+  .stage.train { background: var(--lane-train); }
+  .stage.pack { background: var(--lane-pack); }
+  .stage.cicd { background: var(--lane-cicd); }
+  .stage.k8s { background: var(--lane-k8s); }
+  .stage.client { background: var(--lane-client); }
+  .repo-link { margin-top: 18px; font-size: 14px; }
+
+  /* Risk assessment form */
+  .preset-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+  .btn {
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 7px;
+    font-size: 13.5px;
+    cursor: pointer;
+  }
+  .btn:hover { background: var(--navy-dark); }
+  .btn.accent { background: var(--accent); }
+  .btn.accent:hover { background: var(--accent-dark); }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn.secondary { background: #eef2f7; color: var(--navy-dark); border: 1px solid var(--border); }
+  .btn.secondary:hover { background: #e2e9f2; }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 16px;
+  }
+  .field label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+  }
+  .field input, .field select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--text);
+    background: #fff;
+  }
+  .field input:focus, .field select:focus { outline: 2px solid var(--navy); outline-offset: 1px; }
+  .form-actions { margin-top: 20px; }
+
+  .result-panel { margin-top: 20px; }
+  .verdict { font-size: 26px; font-weight: 800; letter-spacing: 0.02em; margin-bottom: 10px; }
+  .verdict.disease { color: var(--red); }
+  .verdict.no-disease { color: var(--green); }
+  .prob-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .prob-bar-track { flex: 1; height: 14px; border-radius: 7px; background: #e7edf4; overflow: hidden; }
+  .prob-bar-fill { height: 100%; border-radius: 7px 0 0 7px; background: var(--accent); }
+  .prob-bar-fill.disease { background: var(--red); }
+  .prob-bar-fill.no-disease { background: var(--green); }
+  .prob-value { font-weight: 700; min-width: 54px; text-align: right; }
+  .meta-row { font-size: 12.5px; color: var(--text-muted); }
+  .error-box {
+    background: #fdecea;
+    border: 1px solid #f3c1ba;
+    color: #7a271a;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    white-space: pre-wrap;
+  }
+  .empty-state { color: var(--text-muted); font-size: 13.5px; font-style: italic; padding: 6px 0; }
+
+  /* Operations */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table th, table td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border); }
+  table th { color: var(--text-muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.02em; }
+  .status-pill { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  .status-pill.Running { background: #e1f5e8; color: var(--green); }
+  .status-pill.Pending { background: #fff4de; color: #a3701a; }
+  .status-pill.Failed { background: #fdecea; color: var(--red); }
+  .ops-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: start; }
+  .traffic-card .counters { display: flex; gap: 28px; margin: 14px 0 16px; }
+  .counter .counter-value { font-size: 26px; font-weight: 800; color: var(--navy-dark); }
+  .counter .counter-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.02em; }
+  .last-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .running-indicator { font-size: 13px; margin-bottom: 10px; }
+  .running-indicator.on { color: var(--green); font-weight: 600; }
+  .running-indicator.off { color: var(--text-muted); }
+</style>
+
+<nav class="sidebar">
+  <h1>Heart Disease MLOps</h1>
+  <button class="nav-btn active" id="nav-overview" onclick="showView('overview')">
+    <strong>Overview</strong>
+    <span>for everyone</span>
+  </button>
+  <button class="nav-btn" id="nav-risk" onclick="showView('risk')">
+    <strong>Risk Assessment</strong>
+    <span>clinician view</span>
+  </button>
+  <button class="nav-btn" id="nav-operations" onclick="showView('operations')">
+    <strong>Operations</strong>
+    <span>platform engineer view</span>
+  </button>
+</nav>
+
+<main>
+
+  <!-- ===================== Overview ===================== -->
+  <section class="view active" id="view-overview">
+    <h2>End-to-end MLOps architecture</h2>
+    <p class="subtitle">
+      From raw UCI Cleveland data to a monitored prediction service running on Kubernetes.
+    </p>
+    <img class="arch-img" src="/architecture.png" alt="Architecture diagram: data pipeline through training, packaging, CI/CD, and Kubernetes deployment">
+    <div class="panel">
+      <h3>Pipeline stages</h3>
+      <div class="stage-list">
+        <div class="stage data">
+          <div class="stage-name">Data &amp; Features</div>
+          <div class="stage-caption">UCI Cleveland data cleaned, binarized, and enriched with derived clinical features (RPP, HRR, oldpeak x slope).</div>
+        </div>
+        <div class="stage train">
+          <div class="stage-name">Training &amp; Tracking</div>
+          <div class="stage-caption">Six model / feature-set combinations grid-searched and logged to MLflow with ROC and confusion-matrix plots.</div>
+        </div>
+        <div class="stage pack">
+          <div class="stage-name">Packaging</div>
+          <div class="stage-caption">Best run (logistic regression + clinical features, test ROC-AUC 0.8817) exported to a versioned joblib pipeline.</div>
+        </div>
+        <div class="stage cicd">
+          <div class="stage-name">CI/CD</div>
+          <div class="stage-caption">GitHub Actions lints, runs all 39 tests, smoke-trains, and builds the Docker image on every push.</div>
+        </div>
+        <div class="stage k8s">
+          <div class="stage-name">Kubernetes</div>
+          <div class="stage-caption">Two-replica FastAPI deployment behind a LoadBalancer, scraped by Prometheus and visualized in Grafana.</div>
+        </div>
+        <div class="stage client">
+          <div class="stage-name">Client</div>
+          <div class="stage-caption">A clinician (or this dashboard) sends patient features to POST /predict and gets back a prediction and probability.</div>
+        </div>
+      </div>
+      <p class="repo-link">
+        Source: <a href="https://github.com/axle-bits/MLOP_Assignment_1" target="_blank" rel="noopener">github.com/axle-bits/MLOP_Assignment_1</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== Risk Assessment ===================== -->
+  <section class="view" id="view-risk">
+    <h2>Risk Assessment</h2>
+    <p class="subtitle">Enter the 13 clinical features and call the live prediction API.</p>
+
+    <div class="panel">
+      <h3>Quick presets</h3>
+      <div class="preset-row">
+        <button class="btn secondary" onclick="applyPreset('typical')">Typical patient</button>
+        <button class="btn secondary" onclick="applyPreset('high')">High-risk patient</button>
+        <button class="btn secondary" onclick="applyPreset('low')">Low-risk patient</button>
+      </div>
+
+      <form id="predict-form" class="form-grid" onsubmit="return false;">
+        <div class="field">
+          <label for="field-age">Age (years)</label>
+          <input type="number" id="field-age" min="0" max="120" step="1" value="63">
+        </div>
+        <div class="field">
+          <label for="field-sex">Sex</label>
+          <select id="field-sex">
+            <option value="1">Male</option>
+            <option value="0">Female</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="field-cp">Chest pain type</label>
+          <select id="field-cp">
+            <option value="1">Typical angina</option>
+            <option value="2">Atypical angina</option>
+            <option value="3">Non-anginal pain</option>
+            <option value="4">Asymptomatic</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="field-trestbps">Resting blood pressure (mm Hg)</label>
+          <input type="number" id="field-trestbps" min="0" step="1" value="145">
+        </div>
+        <div class="field">
+          <label for="field-chol">Serum cholesterol (mg/dl)</label>
+          <input type="number" id="field-chol" min="0" step="1" value="233">
+        </div>
+        <div class="field">
+          <label for="field-fbs">Fasting blood sugar &gt; 120 mg/dl</label>
+          <select id="field-fbs">
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="field-restecg">Resting ECG result</label>
+          <select id="field-restecg">
+            <option value="0">Normal</option>
+            <option value="1">ST-T wave abnormality</option>
+            <option value="2">Left ventricular hypertrophy</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="field-thalach">Max heart rate achieved</label>
+          <input type="number" id="field-thalach" min="0" step="1" value="150">
+        </div>
+        <div class="field">
+          <label for="field-exang">Exercise-induced angina</label>
+          <select id="field-exang">
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="field-oldpeak">ST depression (oldpeak)</label>
+          <input type="number" id="field-oldpeak" min="0" step="0.1" value="2.3">
+        </div>
+        <div class="field">
+          <label for="field-slope">Slope of peak exercise ST segment</label>
+          <select id="field-slope">
+            <option value="1">Upsloping</option>
+            <option value="2">Flat</option>
+            <option value="3">Downsloping</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="field-ca">Major vessels colored by fluoroscopy</label>
+          <select id="field-ca">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="field-thal">Thalassemia</label>
+          <select id="field-thal">
+            <option value="3">Normal</option>
+            <option value="6">Fixed defect</option>
+            <option value="7">Reversible defect</option>
+          </select>
+        </div>
+      </form>
+
+      <div class="form-actions">
+        <button class="btn accent" id="predict-btn" onclick="submitPrediction()">Predict</button>
+      </div>
+
+      <div class="result-panel" id="result-panel">
+        <p class="empty-state">No prediction yet — fill in the form (or use a preset) and click Predict.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Operations ===================== -->
+  <section class="view" id="view-operations">
+    <h2>Operations</h2>
+    <p class="subtitle">Live cluster status (refreshes every 3s) and the demo traffic generator.</p>
+
+    <div class="ops-grid">
+      <div>
+        <div class="panel">
+          <h3>Pods</h3>
+          <div id="pods-container"><p class="empty-state">Loading cluster status…</p></div>
+        </div>
+        <div class="panel">
+          <h3>Deployments</h3>
+          <div id="deployments-container"><p class="empty-state">Loading cluster status…</p></div>
+        </div>
+        <div class="panel">
+          <h3>Services</h3>
+          <div id="services-container"><p class="empty-state">Loading cluster status…</p></div>
+        </div>
+      </div>
+
+      <div class="panel traffic-card">
+        <h3>Traffic generator</h3>
+        <div class="running-indicator off" id="traffic-indicator">Stopped</div>
+        <button class="btn accent" id="traffic-toggle-btn" onclick="toggleTraffic()">Start</button>
+        <div class="counters">
+          <div class="counter">
+            <div class="counter-value" id="traffic-sent">0</div>
+            <div class="counter-label">Requests sent</div>
+          </div>
+          <div class="counter">
+            <div class="counter-value" id="traffic-errors">0</div>
+            <div class="counter-label">Invalid sent</div>
+          </div>
+        </div>
+        <div class="last-label" id="traffic-last-label">Last response: —</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  const FIELD_ORDER = [
+    "age", "sex", "cp", "trestbps", "chol", "fbs", "restecg",
+    "thalach", "exang", "oldpeak", "slope", "ca", "thal",
+  ];
+  const INT_FIELDS = new Set(FIELD_ORDER.filter((f) => f !== "oldpeak"));
+
+  const PRESETS = {
+    typical: { age: 63, sex: 1, cp: 1, trestbps: 145, chol: 233, fbs: 1, restecg: 2, thalach: 150, exang: 0, oldpeak: 2.3, slope: 3, ca: 0, thal: 6 },
+    high: { age: 63, sex: 1, cp: 4, trestbps: 150, chol: 300, fbs: 0, restecg: 2, thalach: 100, exang: 1, oldpeak: 3.0, slope: 2, ca: 3, thal: 7 },
+    low: { age: 35, sex: 0, cp: 3, trestbps: 115, chol: 180, fbs: 0, restecg: 0, thalach: 185, exang: 0, oldpeak: 0.0, slope: 1, ca: 0, thal: 3 },
+  };
+
+  // ---------- Navigation ----------
+  let opsPollHandles = null;
+
+  function showView(view) {
+    document.querySelectorAll(".view").forEach((el) => el.classList.remove("active"));
+    document.getElementById("view-" + view).classList.add("active");
+    document.querySelectorAll(".nav-btn").forEach((el) => el.classList.remove("active"));
+    document.getElementById("nav-" + view).classList.add("active");
+    if (view === "operations") {
+      startOperationsPolling();
+    } else {
+      stopOperationsPolling();
+    }
+  }
+
+  // ---------- Risk Assessment ----------
+  function applyPreset(name) {
+    const preset = PRESETS[name];
+    for (const field of FIELD_ORDER) {
+      document.getElementById("field-" + field).value = preset[field];
+    }
+  }
+
+  function collectPayload() {
+    const payload = {};
+    for (const field of FIELD_ORDER) {
+      const raw = document.getElementById("field-" + field).value;
+      payload[field] = INT_FIELDS.has(field) ? parseInt(raw, 10) : parseFloat(raw);
+    }
+    return payload;
+  }
+
+  async function submitPrediction() {
+    const btn = document.getElementById("predict-btn");
+    const resultPanel = document.getElementById("result-panel");
+    btn.disabled = true;
+    btn.textContent = "Predicting…";
+    resultPanel.innerHTML = '<p class="empty-state">Waiting for the API…</p>';
+
+    const payload = collectPayload();
+    const start = performance.now();
+    try {
+      const response = await fetch("/api/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const latencyMs = performance.now() - start;
+      const body = await response.json();
+      if (response.ok) {
+        renderPredictionResult(body, latencyMs);
+      } else {
+        renderPredictionError(response.status, body, latencyMs);
+      }
+    } catch (err) {
+      resultPanel.innerHTML =
+        '<div class="error-box">Request failed: ' + escapeHtml(err.message) + "</div>";
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Predict";
+    }
+  }
+
+  function renderPredictionResult(body, latencyMs) {
+    const resultPanel = document.getElementById("result-panel");
+    const isDisease = body.prediction === 1;
+    const verdictClass = isDisease ? "disease" : "no-disease";
+    const verdictText = isDisease ? "DISEASE RISK" : "NO DISEASE";
+    const pct = (body.probability * 100).toFixed(1);
+    resultPanel.innerHTML = `
+      <div class="verdict ${verdictClass}">${verdictText}</div>
+      <div class="prob-row">
+        <div class="prob-bar-track">
+          <div class="prob-bar-fill ${verdictClass}" style="width: ${pct}%"></div>
+        </div>
+        <div class="prob-value">${pct}%</div>
+      </div>
+      <div class="meta-row">Latency: ${latencyMs.toFixed(0)} ms &middot; risk_label: ${escapeHtml(body.risk_label || "")}</div>
+    `;
+  }
+
+  function renderPredictionError(status, body, latencyMs) {
+    const resultPanel = document.getElementById("result-panel");
+    let message;
+    if (status === 422 && body && Array.isArray(body.detail)) {
+      const lines = body.detail.map((item) => {
+        const loc = Array.isArray(item.loc) ? item.loc.join(".") : String(item.loc);
+        return "• " + loc + ": " + item.msg;
+      });
+      message = "Validation error (422):\n" + lines.join("\n");
+    } else {
+      message = "Request failed (" + status + "):\n" + JSON.stringify(body, null, 2);
+    }
+    resultPanel.innerHTML =
+      '<div class="error-box">' + escapeHtml(message) + "</div>" +
+      '<div class="meta-row" style="margin-top:8px;">Latency: ' + latencyMs.toFixed(0) + " ms</div>";
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ---------- Operations: cluster ----------
+  function formatAge(timestamp) {
+    if (!timestamp) return "—";
+    const createdMs = new Date(timestamp).getTime();
+    const diffSeconds = Math.max(0, Math.floor((Date.now() - createdMs) / 1000));
+    if (diffSeconds < 60) return diffSeconds + "s";
+    const minutes = Math.floor(diffSeconds / 60);
+    if (minutes < 60) return minutes + "m";
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return hours + "h" + (minutes % 60) + "m";
+    const days = Math.floor(hours / 24);
+    return days + "d" + (hours % 24) + "h";
+  }
+
+  async function refreshCluster() {
+    try {
+      const response = await fetch("/api/cluster");
+      const body = await response.json();
+      if (!response.ok) {
+        renderClusterError(body.error || "cluster query failed");
+        return;
+      }
+      renderCluster(body);
+    } catch (err) {
+      renderClusterError(err.message);
+    }
+  }
+
+  function renderClusterError(message) {
+    const empty = '<p class="empty-state">Cluster unreachable — is kubectl configured and the ' +
+      "cluster reachable? (" + escapeHtml(message) + ")</p>";
+    document.getElementById("pods-container").innerHTML = empty;
+    document.getElementById("deployments-container").innerHTML = empty;
+    document.getElementById("services-container").innerHTML = empty;
+  }
+
+  function renderCluster(data) {
+    const items = data.items || [];
+    renderPods(items.filter((i) => i.kind === "Pod"));
+    renderDeployments(items.filter((i) => i.kind === "Deployment"));
+    renderServices(items.filter((i) => i.kind === "Service"));
+  }
+
+  function renderPods(pods) {
+    const container = document.getElementById("pods-container");
+    if (pods.length === 0) {
+      container.innerHTML = '<p class="empty-state">No pods found in namespace heart-disease.</p>';
+      return;
+    }
+    const rows = pods.map((pod) => {
+      const statuses = (pod.status && pod.status.containerStatuses) || [];
+      const readyCount = statuses.filter((c) => c.ready).length;
+      const restarts = statuses.reduce((sum, c) => sum + (c.restartCount || 0), 0);
+      const phase = (pod.status && pod.status.phase) || "Unknown";
+      return `<tr>
+        <td>${escapeHtml(pod.metadata.name)}</td>
+        <td>${readyCount}/${statuses.length}</td>
+        <td><span class="status-pill ${escapeHtml(phase)}">${escapeHtml(phase)}</span></td>
+        <td>${restarts}</td>
+        <td>${formatAge(pod.metadata.creationTimestamp)}</td>
+      </tr>`;
+    });
+    container.innerHTML = `
+      <table>
+        <thead><tr><th>Name</th><th>Ready</th><th>Status</th><th>Restarts</th><th>Age</th></tr></thead>
+        <tbody>${rows.join("")}</tbody>
+      </table>`;
+  }
+
+  function renderDeployments(deployments) {
+    const container = document.getElementById("deployments-container");
+    if (deployments.length === 0) {
+      container.innerHTML = '<p class="empty-state">No deployments found.</p>';
+      return;
+    }
+    const rows = deployments.map((dep) => {
+      const ready = (dep.status && dep.status.readyReplicas) || 0;
+      const desired = (dep.spec && dep.spec.replicas) || 0;
+      return `<tr>
+        <td>${escapeHtml(dep.metadata.name)}</td>
+        <td>${ready}/${desired}</td>
+        <td>${formatAge(dep.metadata.creationTimestamp)}</td>
+      </tr>`;
+    });
+    container.innerHTML = `
+      <table>
+        <thead><tr><th>Name</th><th>Ready/Desired</th><th>Age</th></tr></thead>
+        <tbody>${rows.join("")}</tbody>
+      </table>`;
+  }
+
+  function renderServices(services) {
+    const container = document.getElementById("services-container");
+    if (services.length === 0) {
+      container.innerHTML = '<p class="empty-state">No services found.</p>';
+      return;
+    }
+    const rows = services.map((svc) => {
+      const ports = ((svc.spec && svc.spec.ports) || [])
+        .map((p) => `${p.port}:${p.targetPort}/${p.protocol}`)
+        .join(", ");
+      return `<tr>
+        <td>${escapeHtml(svc.metadata.name)}</td>
+        <td>${escapeHtml((svc.spec && svc.spec.type) || "—")}</td>
+        <td>${escapeHtml(ports)}</td>
+      </tr>`;
+    });
+    container.innerHTML = `
+      <table>
+        <thead><tr><th>Name</th><th>Type</th><th>Ports</th></tr></thead>
+        <tbody>${rows.join("")}</tbody>
+      </table>`;
+  }
+
+  // ---------- Operations: traffic generator ----------
+  async function toggleTraffic() {
+    const btn = document.getElementById("traffic-toggle-btn");
+    const isRunning = btn.dataset.running === "true";
+    const action = isRunning ? "stop" : "start";
+    btn.disabled = true;
+    try {
+      const response = await fetch("/api/traffic", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+      const body = await response.json();
+      updateTrafficUI(body);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function refreshTraffic() {
+    try {
+      const response = await fetch("/api/traffic");
+      const body = await response.json();
+      updateTrafficUI(body);
+    } catch (err) {
+      // leave last known values on screen; swallow transient errors
+    }
+  }
+
+  function updateTrafficUI(body) {
+    const btn = document.getElementById("traffic-toggle-btn");
+    const indicator = document.getElementById("traffic-indicator");
+    btn.dataset.running = body.running ? "true" : "false";
+    btn.textContent = body.running ? "Stop" : "Start";
+    indicator.textContent = body.running ? "Running" : "Stopped";
+    indicator.className = "running-indicator " + (body.running ? "on" : "off");
+    document.getElementById("traffic-sent").textContent = body.sent;
+    document.getElementById("traffic-errors").textContent = body.errors_sent;
+    document.getElementById("traffic-last-label").textContent =
+      "Last response: " + (body.last_label || "—");
+  }
+
+  function startOperationsPolling() {
+    if (opsPollHandles) return;
+    refreshCluster();
+    refreshTraffic();
+    opsPollHandles = {
+      cluster: setInterval(refreshCluster, 3000),
+      traffic: setInterval(refreshTraffic, 2000),
+    };
+  }
+
+  function stopOperationsPolling() {
+    if (!opsPollHandles) return;
+    clearInterval(opsPollHandles.cluster);
+    clearInterval(opsPollHandles.traffic);
+    opsPollHandles = null;
+  }
+</script>
