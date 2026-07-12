@@ -2,13 +2,13 @@
 
 Selection is deterministic: among full-grid runs of the heart-disease-risk
 experiment, take argmax test_roc_auc (training seed 785 makes the winner
-reproducible). Run ids are resolved at export time, never hardcoded — the
+reproducible). Run ids are resolved at export time, never hardcoded  -  the
 local store differs per machine.
 
 Outputs (committed to git so serving and graders need no MLflow store):
-- models/heart_disease_pipeline.joblib  — canonical serving artifact
-- models/model_metadata.json            — provenance + serving contract
-- models/mlflow_model/                  — same model in MLflow format
+- models/heart_disease_pipeline.joblib   -  canonical serving artifact
+- models/model_metadata.json             -  provenance + serving contract
+- models/mlflow_model/                   -  same model in MLflow format
 
 Usage:
     python -m ml.models.export [--tracking-uri URI] [--out-dir models]
@@ -46,13 +46,13 @@ def pick_best(runs: pd.DataFrame) -> pd.Series:
     """Best full-grid run row from a mlflow.search_runs frame."""
     if runs.empty:
         raise RuntimeError(
-            f"No runs in experiment '{EXPERIMENT_NAME}' — "
+            f"No runs in experiment '{EXPERIMENT_NAME}'  -  "
             "run `python -m ml.models.train` first."
         )
     full = runs[runs["params.quick_mode"] == "False"]
     if full.empty:
         raise RuntimeError(
-            "No full-grid runs found (quick-mode runs only) — "
+            "No full-grid runs found (quick-mode runs only)  -  "
             "run `python -m ml.models.train` without --quick."
         )
     return full.loc[full["metrics.test_roc_auc"].idxmax()]
@@ -68,7 +68,7 @@ def export(tracking_uri: str | None = None, out_dir: Path = Path("models")) -> d
         experiment = mlflow.get_experiment_by_name(EXPERIMENT_NAME)
         if experiment is None:
             raise RuntimeError(
-                f"Experiment '{EXPERIMENT_NAME}' not found in the tracking store — "
+                f"Experiment '{EXPERIMENT_NAME}' not found in the tracking store  -  "
                 "run `python -m ml.models.train` first."
             )
         best = pick_best(mlflow.search_runs(experiment_ids=[experiment.experiment_id]))

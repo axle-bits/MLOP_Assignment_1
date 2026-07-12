@@ -97,13 +97,13 @@ def evaluate_on_test(pipe, X_test, y_test) -> dict:
 def log_plots(pipe, X_test, y_test, model_name: str):
     fig, ax = plt.subplots(figsize=(5, 4))
     RocCurveDisplay.from_estimator(pipe, X_test, y_test, ax=ax, curve_kwargs={"color": C_YES})
-    ax.set_title(f"ROC curve — {model_name} (test)")
+    ax.set_title(f"ROC curve  -  {model_name} (test)")
     mlflow.log_figure(fig, "roc_curve.png")
     plt.close(fig)
 
     fig, ax = plt.subplots(figsize=(4.5, 4))
     ConfusionMatrixDisplay.from_estimator(pipe, X_test, y_test, ax=ax, cmap="Blues")
-    ax.set_title(f"Confusion matrix — {model_name} (test)")
+    ax.set_title(f"Confusion matrix  -  {model_name} (test)")
     mlflow.log_figure(fig, "confusion_matrix.png")
     plt.close(fig)
 
@@ -120,7 +120,7 @@ def log_plots(pipe, X_test, y_test, model_name: str):
     colors = [C_YES if v > 0 else C_NO for v in values[order]][::-1]
     ax.barh(np.array(feature_names)[order][::-1], values[order][::-1], color=colors)
     ax.set_xlabel(label)
-    ax.set_title(f"Top features — {model_name}")
+    ax.set_title(f"Top features  -  {model_name}")
     fig.tight_layout()
     mlflow.log_figure(fig, "feature_importance.png")
     plt.close(fig)
@@ -215,7 +215,7 @@ def main():
         "--tracking-uri",
         default=None,
         help=(
-            "MLflow tracking URI (default: mlflow's local default — "
+            "MLflow tracking URI (default: mlflow's local default  -  "
             "sqlite:///mlflow.db metadata, ./mlruns artifacts)"
         ),
     )

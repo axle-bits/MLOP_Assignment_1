@@ -2,7 +2,7 @@
 
 The pipeline is loaded once at startup from MODEL_PATH (default: the
 committed artifact under models/). The per-request structured log line is
-deliberately minimal — Phase 7's monitoring builds on it.
+deliberately minimal  -  Phase 7's monitoring builds on it.
 """
 import json
 import logging

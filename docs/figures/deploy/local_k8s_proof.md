@@ -66,7 +66,7 @@ Waiting for deployment "heart-disease-api" rollout to finish: 1 of 2 updated rep
 deployment "heart-disease-api" successfully rolled out
 ```
 
-**Image-load fallback was NOT needed.** The locally built image was visible to both nodes and the rollout completed cleanly on the first attempt — no `ErrImageNeverPull`/`ImagePullBackOff` was observed, so the `docker save` / `docker cp` / `ctr import` remediation was not exercised.
+**Image-load fallback was NOT needed.** The locally built image was visible to both nodes and the rollout completed cleanly on the first attempt  -  no `ErrImageNeverPull`/`ImagePullBackOff` was observed, so the `docker save` / `docker cp` / `ctr import` remediation was not exercised.
 
 ## Step 4: Verify cluster state and endpoints
 
@@ -93,7 +93,7 @@ NAME                                           DESIRED   CURRENT   READY   AGE  
 replicaset.apps/heart-disease-api-5d7b66585b   2         2         2       18s   api          heart-disease-api:v1   app=heart-disease-api,pod-template-hash=5d7b66585b
 ```
 
-Both nodes `Ready`; 2/2 pods `Running` with `READY 1/1`. Note: the service `EXTERNAL-IP` column shows `172.18.0.6` (Docker Desktop's LB IP) rather than the literal string `localhost` — this is Docker Desktop's normal behavior; `localhost:80` still routes to the service, confirmed below.
+Both nodes `Ready`; 2/2 pods `Running` with `READY 1/1`. Note: the service `EXTERNAL-IP` column shows `172.18.0.6` (Docker Desktop's LB IP) rather than the literal string `localhost`  -  this is Docker Desktop's normal behavior; `localhost:80` still routes to the service, confirmed below.
 
 ```bash
 curl -s http://localhost/health && echo && curl -s -X POST http://localhost/predict -H "Content-Type: application/json" -d @api/sample_request.json
@@ -168,7 +168,7 @@ heart-disease-api-558c88bb8b-mgb89   1/1     Running   0          22s
 heart-disease-api-558c88bb8b-s6zxt   1/1     Running   0          16s
 ```
 
-Six consecutive `200`s — the service stayed up throughout the restart — and both pods show fresh AGE, confirming the rolling-update strategy replaced them without downtime. Post-restart rollout status and cluster state were re-confirmed:
+Six consecutive `200`s  -  the service stayed up throughout the restart  -  and both pods show fresh AGE, confirming the rolling-update strategy replaced them without downtime. Post-restart rollout status and cluster state were re-confirmed:
 
 ```bash
 kubectl rollout status deployment/heart-disease-api -n heart-disease --timeout=60s
@@ -186,6 +186,6 @@ deployment "heart-disease-api" successfully rolled out
 ## Self-review
 
 - All commands above were executed against a live `docker-desktop` cluster in this session; no output was fabricated or beautified.
-- The only deviation from the brief's exact expected text is the service `EXTERNAL-IP` value (`172.18.0.6` instead of the literal word `localhost`) — functionally equivalent for Docker Desktop, and confirmed working via the `curl http://localhost/...` calls immediately after.
+- The only deviation from the brief's exact expected text is the service `EXTERNAL-IP` value (`172.18.0.6` instead of the literal word `localhost`)  -  functionally equivalent for Docker Desktop, and confirmed working via the `curl http://localhost/...` calls immediately after.
 - The image-load fallback (Step 3 of the brief) was not required; the rollout succeeded on the first `kubectl rollout status` call.
 - Deployment was left running (2/2 pods `Running`, service `heart-disease-api` of type `LoadBalancer` on port 80) for the user's own screenshots.

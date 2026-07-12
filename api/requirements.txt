@@ -1,4 +1,4 @@
-# Slim serving dependencies — versions must match the repo-root
+# Slim serving dependencies  -  versions must match the repo-root
 # requirements.txt (source of truth). The committed model is a scikit-learn
 # LogisticRegression pipeline; if a future retrain crowns XGBoost, add the
 # xgboost pin here.

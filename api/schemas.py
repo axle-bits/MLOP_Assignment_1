@@ -3,7 +3,7 @@
 Validation bounds come from the UCI Heart Disease data dictionary
 (Cleveland). Categorical codes are strict enums: the model pipeline would
 silently absorb unknown codes (OneHotEncoder handle_unknown="ignore"), but
-for a clinical predictor an explicit 422 beats silent garbage-in — see
+for a clinical predictor an explicit 422 beats silent garbage-in  -  see
 docs/DECISIONS.md.
 """
 from typing import Literal

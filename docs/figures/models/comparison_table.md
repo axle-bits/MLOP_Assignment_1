@@ -1,4 +1,4 @@
-# Model comparison — full-grid runs (2026-07-02)
+# Model comparison  -  full-grid runs (2026-07-02)
 
 ```
          model_name feature_set                           run_id  cv_roc_auc_mean  cv_roc_auc_std  test_accuracy  test_precision  test_recall  test_f1  test_roc_auc

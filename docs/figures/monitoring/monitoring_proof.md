@@ -5,7 +5,7 @@ the local Docker Desktop Kubernetes cluster (2 nodes, v1.36.1). Long build
 output is trimmed to the final lines; everything shown is as observed.
 
 The image-load fallback (docker save → ctr import into the nodes) was NOT
-needed — the locally built `heart-disease-api:v2` was visible to the
+needed  -  the locally built `heart-disease-api:v2` was visible to the
 cluster directly, and the rolling update succeeded on the first apply.
 
 ## 1. Build the instrumented v2 image

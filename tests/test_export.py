@@ -1,6 +1,6 @@
 """Tests for best-run selection and export. Selection logic is tested on
 hand-built frames (no store); store-level failure modes use an empty temp
-sqlite store — no test here requires the developer's real MLflow store."""
+sqlite store  -  no test here requires the developer's real MLflow store."""
 import json
 from pathlib import Path
 
@@ -134,5 +134,5 @@ def test_export_restores_global_tracking_uri(tmp_path):
     with pytest.raises(RuntimeError):
         export(tracking_uri=uri, out_dir=tmp_path / "models")
     # export() itself must restore the URI (not just the test fixture,
-    # which only runs at teardown — this assertion happens before that).
+    # which only runs at teardown  -  this assertion happens before that).
     assert mlflow.get_tracking_uri() == before

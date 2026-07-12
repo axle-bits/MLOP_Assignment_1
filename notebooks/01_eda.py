@@ -14,11 +14,11 @@
 # ---
 
 # %% [markdown]
-# # Heart Disease (Cleveland) — Exploratory Data Analysis
+# # Heart Disease (Cleveland)  -  Exploratory Data Analysis
 #
-# Dataset: UCI Heart Disease (id=45), Cleveland subset — 303 patients, 13
+# Dataset: UCI Heart Disease (id=45), Cleveland subset  -  303 patients, 13
 # clinical features, target binarized (0 = no disease, 1 = disease present).
-# Theme: **clinical risk stratification** — beyond overall patterns, how does
+# Theme: **clinical risk stratification**  -  beyond overall patterns, how does
 # risk differ across patient subgroups (sex, age band, symptom presentation)?
 #
 # All figures are saved to `docs/figures/eda/` for the final report.
@@ -86,7 +86,7 @@ clean[CATEGORICAL_COLS].astype("object").describe().T
 #
 # The cleaned data has no missing values by construction; missingness is a
 # property of the *raw* data: `ca` (fluoroscopy vessel count) and `thal`
-# (thalassemia type) — likely tests not performed for those patients.
+# (thalassemia type)  -  likely tests not performed for those patients.
 # Decision: drop the 6 affected rows (2% of data) rather than impute
 # categorical clinical measurements. See docs/DECISIONS.md.
 
@@ -106,7 +106,7 @@ plt.show()
 # ## 3. Class balance
 #
 # Left: the raw target is severity 0–4. Right: the binarized target used for
-# modeling — near-balanced, so accuracy is meaningful and no resampling is
+# modeling  -  near-balanced, so accuracy is meaningful and no resampling is
 # needed (though we still report precision/recall/ROC-AUC).
 
 # %%
@@ -178,7 +178,7 @@ plt.show()
 # %% [markdown]
 # ## 6. Risk stratification: subgroup analysis
 #
-# The clinical angle of this project — disease prevalence is not uniform
+# The clinical angle of this project  -  disease prevalence is not uniform
 # across patient subgroups.
 
 # %%
@@ -244,23 +244,23 @@ plt.show()
 #
 # (Bullets below are verified against the executed outputs above.)
 #
-# - **Class balance**: the binarized target is near-balanced — 160 no-disease
-#   (54%) vs 137 disease (46%) of n=297 — down from the raw severity spread
+# - **Class balance**: the binarized target is near-balanced  -  160 no-disease
+#   (54%) vs 137 disease (46%) of n=297  -  down from the raw severity spread
 #   (num=0..4: 164/55/36/35/13). Accuracy is a meaningful metric here, though
 #   precision/recall/ROC-AUC are still reported.
 # - **Missing-data decision**: only `ca` (4 rows) and `thal` (2 rows) have
-#   missing values in the raw data — 6 rows total, ~2% of the 303-patient raw
-#   set — dropped rather than imputing categorical clinical measurements
+#   missing values in the raw data  -  6 rows total, ~2% of the 303-patient raw
+#   set  -  dropped rather than imputing categorical clinical measurements
 #   (see docs/DECISIONS.md).
 # - **Sex prevalence gap**: males show more than double the disease
-#   prevalence of females — 56% (n=201) vs 26% (n=96).
+#   prevalence of females  -  56% (n=201) vs 26% (n=96).
 # - **Age-band trend**: prevalence rises with age from 25% (<45, n=53) to 34%
 #   (45-54, n=85) to a peak of 64% (55-64, n=118), then falls to 49% (65+,
-#   n=41) — the drop in the oldest band is likely a small-sample effect
+#   n=41)  -  the drop in the oldest band is likely a small-sample effect
 #   rather than a true risk decline.
 # - **cp × exang / "asymptomatic" pattern**: chest-pain type 4 (labeled
-#   *asymptomatic*) has by far the highest prevalence in the grid — 55%
-#   without exercise angina (n=64) and 87% with it (n=78) — versus 18-36%
+#   *asymptomatic*) has by far the highest prevalence in the grid  -  55%
+#   without exercise angina (n=64) and 87% with it (n=78)  -  versus 18-36%
 #   for symptomatic types 1-3. The asymptomatic label is counterintuitive:
 #   it marks the highest-risk group, especially combined with exang=1.
 # - **Strongest correlates of target**: among continuous features, `oldpeak`

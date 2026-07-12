@@ -1,9 +1,9 @@
 ---
-title: "Heart Disease Risk Prediction — End-to-End MLOps Pipeline"
+title: "Heart Disease Risk Prediction  -  End-to-End MLOps Pipeline"
 author: "Adithya (2024AC05785)"
 ---
 
-**Course:** AIMLCZG523 — MLOps
+**Course:** AIMLCZG523  -  MLOps
 **Repository:** https://github.com/axle-bits/MLOP_Assignment_1
 
 ## 1. Overview & Setup
@@ -47,8 +47,8 @@ uvicorn api.main:app --reload --port 8000
 Or run containerized and on Kubernetes:
 
 ```bash
-docker build -t heart-disease-api -f infra/Dockerfile .
-docker run -d -p 8000:8000 heart-disease-api
+docker build -t heart-disease-api:latest -f infra/Dockerfile .
+docker run -d -p 8000:8000 heart-disease-api:latest
 kubectl apply -f infra/k8s/
 ```
 
@@ -220,7 +220,7 @@ mutually-compatible combination, not an assumed one.
 ## 6. CI/CD
 
 The GitHub Actions pipeline (`.github/workflows/ci.yml`) runs four jobs on
-every push and pull request: **lint** (`ruff check .` — pycodestyle errors,
+every push and pull request: **lint** (`ruff check .`  -  pycodestyle errors,
 pyflakes, import order) and **test** (the full pytest suite, JUnit results
 uploaded as an artifact even on failure) run in parallel, followed by
 **train-smoke** (`python -m ml.models.train --quick`, exercising all six
@@ -321,7 +321,7 @@ Verification on a live 2-node cluster (`desktop-control-plane`,
 `Running` with `READY 1/1`; `curl http://localhost/health` and a `/predict`
 call both succeeded through the LoadBalancer Service. A rolling-restart
 demo (`kubectl rollout restart`) issued six consecutive health-check
-requests during the restart — all returned `200` — confirming zero-downtime
+requests during the restart  -  all returned `200`  -  confirming zero-downtime
 rollout while both pods were replaced with fresh ones.
 
 ![Cluster nodes and resources](../../screenshots/deploy/02-kubectl-nodes-and-all-resources.png)

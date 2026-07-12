@@ -1,4 +1,4 @@
-# Heart Disease Risk Prediction — MLOps Pipeline
+# Heart Disease Risk Prediction  -  MLOps Pipeline
 
 [![CI](https://github.com/axle-bits/MLOP_Assignment_1/actions/workflows/ci.yml/badge.svg)](https://github.com/axle-bits/MLOP_Assignment_1/actions/workflows/ci.yml)
 
@@ -25,13 +25,14 @@ pytest                         # unit tests
 
 ## EDA
 
-`notebooks/01_eda.ipynb` — executed notebook (histograms, correlation
+`notebooks/01_eda.ipynb`  -  executed notebook (histograms, correlation
 heatmap, class balance, missing-value analysis, and subgroup risk analysis
 by sex / age band / chest-pain×angina). Regenerate with:
 
 ```bash
 jupytext --to notebook --execute notebooks/01_eda.py -o notebooks/01_eda.ipynb
 jupytext --to notebook --execute notebooks/02_model_comparison.py -o notebooks/02_model_comparison.ipynb
+jupytext --to notebook --execute notebooks/03_inference.py -o notebooks/03_inference.ipynb
 ```
 
 Figures are written to `docs/figures/eda/`.
@@ -47,7 +48,7 @@ python -m ml.models.train --quick   # single-candidate grids (CI smoke)
 
 Every run logs params, cross-validation + held-out test metrics, ROC curve,
 confusion matrix, feature importances, and the fitted pipeline to the local
-MLflow store (run metadata in `mlflow.db`, artifacts under `./mlruns` — both gitignored). Run all commands from the repo root — `mlflow.db` and `./mlruns` are created relative to the working directory. Inspect with:
+MLflow store (run metadata in `mlflow.db`, artifacts under `./mlruns`  -  both gitignored). Run all commands from the repo root  -  `mlflow.db` and `./mlruns` are created relative to the working directory. Inspect with:
 
 ```bash
 mlflow ui --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns
@@ -64,7 +65,7 @@ Export the best run (highest held-out ROC-AUC) to versioned artifacts:
 python -m ml.models.export
 ```
 
-This writes — and the repo commits — `models/heart_disease_pipeline.joblib`
+This writes  -  and the repo commits  -  `models/heart_disease_pipeline.joblib`
 (the full preprocessing+model pipeline; loads with scikit-learn + joblib
 alone), `models/model_metadata.json` (source run, metrics, package versions,
 input schema), and `models/mlflow_model/` (the same model in MLflow format).
@@ -73,15 +74,20 @@ Serving contract: send the 13 raw feature columns (see the metadata file);
 the pipeline handles derived features, scaling, and encoding internally and
 returns a class plus probability.
 
+`notebooks/03_inference.ipynb` demonstrates the artifact standalone: it
+loads the joblib directly (no API server, no MLflow), scores the sample
+request from `api/sample_request.json`, and runs batch inference over the
+cleaned CSV.
+
 ## CI/CD
 
 Every push and pull request runs the GitHub Actions pipeline
 (`.github/workflows/ci.yml`):
 
-1. **Lint** — `ruff check .` (pycodestyle errors, pyflakes, import order)
-2. **Test** — full pytest suite on Python 3.13; JUnit results uploaded as a
+1. **Lint**  -  `ruff check .` (pycodestyle errors, pyflakes, import order)
+2. **Test**  -  full pytest suite on Python 3.13; JUnit results uploaded as a
    workflow artifact on every run, including failures
-3. **Train smoke** — `python -m ml.models.train --quick` trains all six
+3. **Train smoke**  -  `python -m ml.models.train --quick` trains all six
    model combinations end-to-end; the training log and MLflow store are
    uploaded as workflow artifacts
 
@@ -109,7 +115,7 @@ docker run -d -p 8000:8000 heart-disease-api:latest
 ```
 
 Endpoints: `POST /predict` (13 raw features in, prediction + probability
-out — see `api/sample_request.json`), `GET /health`, `GET /model-info`,
+out  -  see `api/sample_request.json`), `GET /health`, `GET /model-info`,
 interactive docs at `/docs`.
 
 ```bash
@@ -146,7 +152,7 @@ Tear down with `kubectl delete -f infra/k8s/`.
 ## Monitoring
 
 With the app deployed, add Prometheus and Grafana (both provisioned
-declaratively — no manual setup):
+declaratively  -  no manual setup):
 
 ```bash
 kubectl apply -f infra/k8s/monitoring/
@@ -154,7 +160,7 @@ kubectl apply -f infra/k8s/monitoring/
 
 - Prometheus scrapes each API pod's `/metrics` every 15s (per-pod targets via a headless Service): http://localhost:9090
 - Grafana (anonymous viewer) serves a pre-provisioned "Heart Disease API"
-  dashboard — request rate, p50/p95 latency, non-2xx rate, and predictions
+  dashboard  -  request rate, p50/p95 latency, non-2xx rate, and predictions
   by risk label: http://localhost:3000
 
 The API exposes standard HTTP metrics plus a domain counter,
@@ -182,7 +188,7 @@ public endpoints and kubectl; it changes nothing in the cluster.
 
 ```
 ml/          data download + preprocessing (importable, tested)
-notebooks/   EDA (jupytext-paired .py source + executed .ipynb)
+notebooks/   EDA, model comparison, inference (jupytext-paired .py + executed .ipynb)
 tests/       pytest unit tests
 docs/        decision log, report, figures
 data/        raw + processed CSVs (committed; tiny dataset)

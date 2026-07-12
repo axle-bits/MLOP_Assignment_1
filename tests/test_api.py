@@ -1,4 +1,4 @@
-"""In-process tests for the serving API (TestClient — no Docker needed)."""
+"""In-process tests for the serving API (TestClient  -  no Docker needed)."""
 import json
 from pathlib import Path
 

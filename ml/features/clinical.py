@@ -12,10 +12,10 @@ CLINICAL_FEATURES = ["rate_pressure_product", "heart_rate_reserve", "oldpeak_slo
 def add_clinical_features(df: pd.DataFrame) -> pd.DataFrame:
     """Append the three derived clinical features; input is not mutated.
 
-    - rate_pressure_product: trestbps × thalach — index of myocardial
+    - rate_pressure_product: trestbps × thalach  -  index of myocardial
       oxygen demand used in stress testing.
-    - heart_rate_reserve: 220 − age − thalach — unused chronotropic capacity.
-    - oldpeak_slope: oldpeak × slope — ST-depression magnitude × slope
+    - heart_rate_reserve: 220 − age − thalach  -  unused chronotropic capacity.
+    - oldpeak_slope: oldpeak × slope  -  ST-depression magnitude × slope
       pattern interaction.
     """
     out = df.copy()

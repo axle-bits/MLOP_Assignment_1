@@ -14,10 +14,10 @@
 # ---
 
 # %% [markdown]
-# # Model Comparison — did clinical feature engineering help?
+# # Model Comparison  -  did clinical feature engineering help?
 #
 # Reads the MLflow experiment `heart-disease-risk` (populated by
-# `python -m ml.models.train`) — no retraining happens here.
+# `python -m ml.models.train`)  -  no retraining happens here.
 # Research question: do the derived clinical features (rate-pressure
 # product, heart-rate reserve, oldpeak×slope) improve prediction over the
 # 13 raw features?
@@ -40,7 +40,7 @@ from ml.models.train import EXPERIMENT_NAME
 
 # The Task 5 training run that populated this repo's experiment was tracked
 # against the local sqlite backend (./mlflow.db), with artifacts materialized
-# under ./mlruns/<experiment_id>/<run_id>/artifacts/ — there is no file-store
+# under ./mlruns/<experiment_id>/<run_id>/artifacts/  -  there is no file-store
 # meta.yaml under ./mlruns (verified: no meta.yaml anywhere in the tree), so
 # a pure `(ROOT / "mlruns").as_uri()` tracking URI cannot find the runs. Point
 # at the sqlite db, which is where the run/param/metric/tag data actually
@@ -61,7 +61,7 @@ METRICS = ["cv_roc_auc_mean", "test_accuracy", "test_precision", "test_recall", 
 runs = mlflow.search_runs(experiment_names=[EXPERIMENT_NAME])
 full = runs[runs["params.quick_mode"] == "False"].copy()
 assert len(full) == 6, (
-    f"expected exactly one full-grid run per combo, found {len(full)} — "
+    f"expected exactly one full-grid run per combo, found {len(full)}  -  "
     "rerun `python -m ml.models.train` into a fresh store"
 )
 table = full[
@@ -79,7 +79,7 @@ fig, ax = plt.subplots(figsize=(6.5, 3.6))
 pivot[["raw", "clinical"]].plot(kind="bar", ax=ax, color=[C_NO, C_YES], width=0.7)
 ax.set_ylabel("test ROC-AUC")
 ax.set_ylim(0.5, 1.0)
-ax.set_title("Test ROC-AUC — raw vs clinical feature set")
+ax.set_title("Test ROC-AUC  -  raw vs clinical feature set")
 ax.legend(title="feature set")
 ax.tick_params(axis="x", rotation=0)
 for container in ax.containers:
@@ -144,16 +144,16 @@ ranking[ranking["feature"].str.contains("|".join(CLINICAL_FEATURES))]
 # - Clinical-vs-raw delta is model-dependent, not uniformly positive:
 #   logistic_regression +0.0056 ROC-AUC (recall unchanged, 0.0), xgboost
 #   +0.0100 ROC-AUC (its best score, still last place), but random_forest
-#   **-0.0089** ROC-AUC — clinical features slightly hurt the forest. Recall
+#   **-0.0089** ROC-AUC  -  clinical features slightly hurt the forest. Recall
 #   tells a starker story: it drops -0.1071 (random_forest) and -0.1429
 #   (xgboost) with clinical features, while staying flat for logistic
-#   regression — the derived features cost the tree models real recall even
+#   regression  -  the derived features cost the tree models real recall even
 #   where ROC-AUC ticks up.
 # - In the best clinical model (logistic_regression), the three derived
 #   features rank in the bottom half of all 25 post-encoding features:
 #   `oldpeak_slope` 15/25, `heart_rate_reserve` 22/25, `rate_pressure_product`
 #   24/25 (second-to-last). The top of the ranking is dominated by raw
-#   features — `sex`, `ca`, `cp_4`, `thal_7`, `slope_2` — none of which are
+#   features  -  `sex`, `ca`, `cp_4`, `thal_7`, `slope_2`  -  none of which are
 #   engineered.
 # - CV-vs-test consistency: cv_roc_auc_mean (0.9148-0.9313) sits 0.04-0.09
 #   above test_roc_auc for every run. The gap is smallest and most stable for
@@ -162,7 +162,7 @@ ranking[ranking["feature"].str.contains("|".join(CLINICAL_FEATURES))]
 #   the linear model.
 # - **Research question answered:** the derived clinical features (rate-
 #   pressure product, heart-rate reserve, oldpeak×slope) do not clearly
-#   improve prediction over the 13 raw features — the ROC-AUC effect is a
+#   improve prediction over the 13 raw features  -  the ROC-AUC effect is a
 #   small, model-dependent wash (+0.006 to +0.010 for two models, -0.009 for
 #   the third) that comes with a real recall cost for the tree-based models,
 #   and the engineered features rank near the bottom of importance even in
