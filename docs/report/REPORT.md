@@ -342,7 +342,8 @@ and status-code metrics) plus a custom domain counter,
 prediction. This surfaces ML-aware signal, the mix of predicted classes
 over time, not just HTTP plumbing. Prometheus and Grafana are deployed
 into the same namespace, fully provisioned from ConfigMaps with a single
-`kubectl apply`: Prometheus statically scrapes the API Service every 15s,
+`kubectl apply`: Prometheus discovers per-pod targets through a headless
+Service with DNS-based service discovery and scrapes each every 15s,
 and Grafana (anonymous viewer access) serves a pre-built "Heart Disease
 API" dashboard covering request rate, p50/p95 latency, non-2xx rate, and
 predictions by risk label. Both are reachable via their own LoadBalancer
@@ -396,8 +397,8 @@ If this pipeline were to continue past the assignment, the clearest next
 steps follow directly from the trade-offs already documented. The tracked
 model could move into MLflow's Model Registry once more than one model
 needs to be managed over time. The monitoring stack could move onto
-persistent storage with a per-pod scrape topology once metrics need to
-survive a restart. EKS is worth revisiting once the account constraints
+persistent storage once metrics need to survive a restart. EKS is worth
+revisiting once the account constraints
 that forced the local-Kubernetes pivot are lifted. None of those are
 required to satisfy the current rubric, but each is a natural,
 low-friction extension of decisions already made, not a rearchitecture.
