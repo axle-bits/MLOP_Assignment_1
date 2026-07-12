@@ -4,8 +4,8 @@
 
 End-to-end MLOps assignment (BITS Pilani AIMLCZG523): a heart-disease risk
 classifier on the UCI Cleveland dataset, with experiment tracking, CI/CD,
-a containerized FastAPI service, Kubernetes deployment on AWS EKS, and
-monitoring.
+a containerized FastAPI service, Kubernetes deployment on Docker Desktop
+(local cluster), and monitoring.
 
 ## Setup
 
@@ -31,6 +31,7 @@ by sex / age band / chest-pain×angina). Regenerate with:
 
 ```bash
 jupytext --to notebook --execute notebooks/01_eda.py -o notebooks/01_eda.ipynb
+jupytext --to notebook --execute notebooks/02_model_comparison.py -o notebooks/02_model_comparison.ipynb
 ```
 
 Figures are written to `docs/figures/eda/`.
@@ -103,8 +104,8 @@ uvicorn api.main:app --reload --port 8000
 Or containerized:
 
 ```bash
-docker build -t heart-disease-api -f infra/Dockerfile .
-docker run -d -p 8000:8000 heart-disease-api
+docker build -t heart-disease-api:latest -f infra/Dockerfile .
+docker run -d -p 8000:8000 heart-disease-api:latest
 ```
 
 Endpoints: `POST /predict` (13 raw features in, prediction + probability
@@ -123,7 +124,7 @@ The API deploys to any Kubernetes cluster from the manifests in `infra/k8s/`
 (tested on Docker Desktop's built-in cluster):
 
 ```bash
-docker build -t heart-disease-api:v1 -f infra/Dockerfile .
+docker build -t heart-disease-api:latest -f infra/Dockerfile .
 kubectl apply -f infra/k8s/
 kubectl rollout status deployment/heart-disease-api -n heart-disease
 ```
