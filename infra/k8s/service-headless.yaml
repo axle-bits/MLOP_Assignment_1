@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: heart-disease-api-headless
+  namespace: heart-disease
+spec:
+  clusterIP: None
+  selector:
+    app: heart-disease-api
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000

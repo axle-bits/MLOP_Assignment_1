@@ -353,16 +353,17 @@ healthy.
 
 ![Grafana dashboard](../../screenshots/monitoring/01-grafana-dashboard-live.png)
 
-One artifact of the setup is visible in the dashboard's "predictions by
-class" panel. Prometheus reaches the API only through its Service, which
-load-balances each scrape between the two pods, so the counter it sees
-alternates between each pod's independently-accumulated value instead of
-climbing monotonically: a visible sawtooth instead of a smooth line. A
-per-pod `instance` label (or scraping through a headless Service to reach
-each pod directly) would resolve this by letting Prometheus sum across
-pods instead of sampling one at a time. This is accepted here as expected
-demo behavior, not a bug, and it is noted here rather than left
-unexplained.
+Watching the dashboard during a longer traffic session exposed a real
+observability lesson. Prometheus initially scraped the API through its
+load-balancing Service, so each scrape landed on a different pod and
+returned that pod's independent counter. The series jumped between two
+values, Prometheus read every downward jump as a counter reset, and the
+rate panels inflated far beyond the true request volume. The fix was to
+scrape each pod directly: a headless Service plus DNS-based service
+discovery gives Prometheus one target per pod, per-pod counters stay
+monotonic, and the summed panels now report true totals. The diagnosis
+itself is recorded in the decision log; the takeaway is that scrape
+topology is part of metric correctness, not just plumbing.
 
 The monitoring stack, like the API deployment, is intentionally ephemeral:
 no persistent volumes are used, so metrics reset whenever pods restart.

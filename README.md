@@ -151,7 +151,7 @@ declaratively — no manual setup):
 kubectl apply -f infra/k8s/monitoring/
 ```
 
-- Prometheus scrapes the API's `/metrics` every 15s: http://localhost:9090
+- Prometheus scrapes each API pod's `/metrics` every 15s (per-pod targets via a headless Service): http://localhost:9090
 - Grafana (anonymous viewer) serves a pre-provisioned "Heart Disease API"
   dashboard — request rate, p50/p95 latency, non-2xx rate, and predictions
   by risk label: http://localhost:3000

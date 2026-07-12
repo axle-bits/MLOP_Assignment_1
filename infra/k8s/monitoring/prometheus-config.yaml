@@ -10,6 +10,8 @@ data:
     scrape_configs:
       - job_name: heart-disease-api
         metrics_path: /metrics
-        static_configs:
-          - targets:
-              - heart-disease-api.heart-disease.svc:80
+        dns_sd_configs:
+          - names:
+              - heart-disease-api-headless.heart-disease.svc.cluster.local
+            type: A
+            port: 8000
